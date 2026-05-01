@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}CRM Cockpit - DentaCare CRM{% endblock %}
+{% block page_eyebrow %}Executive CRM cockpit{% endblock %}
+{% block page_title %}Growth command center{% endblock %}
+{% block page_subtitle %}Pipeline health, revenue forecast, task pressure, patient opportunities, and campaign activity in one operating view.{% endblock %}
+
+{% block header_actions %}
+<div class="quick-actions">
+    <a href="{{ url_for('export_patients_csv') }}" class="btn btn-outline">Export CSV</a>
+    <a href="{{ url_for('tasks') }}" class="btn btn-outline">Open tasks</a>
+    <a href="{{ url_for('add_patient') }}" class="btn btn-primary">Add patient</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="stats-grid">
+    <article class="stat-card teal">
+        <div class="stat-top">
+            <div>
+                <p class="stat-label">Pipeline forecast</p>
+                <h2 class="stat-value">{{ insights.total_estimated|inr }}</h2>
+                <p class="stat-note">Quoted and expected treatment value.</p>
+            </div>
+            <div class="stat-icon teal" aria-hidden="true">PV</div>
+        </div>
+    </article>
+
+    <article class="stat-card green">
+        <div class="stat-top">
+            <div>
+                <p class="stat-label">Collected</p>
+                <h2 class="stat-value">{{ insights.total_collected|inr }}</h2>
+                <p class="stat-note">Tracked patient revenue collected.</p>
+            </div>
+            <div class="stat-icon green" aria-hidden="true">RC</div>
+        </div>
+    </article>
+
+    <article class="stat-card gold">
+        <div class="stat-top">
+            <div>
+                <p class="stat-label">Open work</p>
+                <h2 class="stat-value">{{ insights.open_tasks }}</h2>
+                <p class="stat-note">{{ insights.overdue_tasks }} overdue, {{ insights.due_today_tasks }} due today.</p>
+            </div>
+            <div class="stat-icon gold" aria-hidden="true">TS</div>
+        </div>
+    </article>
+
+    <article class="stat-card red">
+        <div class="stat-top">
+            <div>
+                <p class="stat-label">No-show risk</p>
+                <h2 class="stat-value">{{ insights.no_show_rate }}%</h2>
+                <p class="stat-note">Missed visits against completed outcomes.</p>
+            </div>
+            <div class="stat-icon red" aria-hidden="true">NR</div>
+        </div>
+    </article>
+</section>
+
+<section class="grid-side">
+    <div class="section-stack">
+        <article class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Patient revenue pipeline</h2>
+                    <p class="card-kicker">Stage counts and forecast value</p>
+                </div>
+                <span class="badge badge-scheduled">{{ insights.conversion_rate }}% engaged</span>
+            </div>
+            <div class="pipeline-list">
+                {% for stage in insights.stage_counts %}
+                <div class="pipeline-row">
+                    <div>
+                        <div class="cell-title">{{ stage.stage }}</div>
+                        <div class="cell-subtitle">{{ stage.count }} patient{% if stage.count != 1 %}s{% endif %} · {{ stage.value|inr }}</div>
+                    </div>
+                    <div class="progress-track" aria-hidden="true">
+                        <span style="width: {{ [stage.count * 12, 100]|min }}%;"></span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Top patient opportunities</h2>
+                    <p class="card-kicker">Ranked by stage, urgency, and estimated treatment value</p>
+                </div>
+                <a href="{{ url_for('patients') }}" class="btn btn-ghost btn-sm">Open directory</a>
+            </div>
+
+            {% if insights.priority_patients %}
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Score</th>
+                            <th>Stage</th>
+                            <th>Value</th>
+                            <th>Owner</th>
+                            <th style="text-align:right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in insights.priority_patients %}
+                        <tr>
+                            <td>
+                                <div class="cell-title">{{ patient.name }}</div>
+                                <div class="cell-subtitle">{{ patient.treatment or "General dentistry" }}</div>
+                            </td>
+                            <td><span class="score-pill">{{ patient.lead_score }}</span></td>
+                            <td>
+                                <span class="badge badge-{{ (patient.stage or 'new-inquiry')|lower|replace(' ', '-') }}">
+                                    {{ patient.stage }}
+                                </span>
+                            </td>
+                            <td>{{ patient.estimated_value|inr }}</td>
+                            <td>{{ patient.owner }}</td>
+                            <td style="text-align:right;">
+                                <a href="{{ url_for('patient_profile', pid=patient.id) }}" class="btn btn-outline btn-sm">Work</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="icon" aria-hidden="true">CRM</div>
+                <h3>No opportunities yet</h3>
+                <p>Add patients with treatment value, source, priority, and next action to populate this view.</p>
+            </div>
+            {% endif %}
+        </article>
+    </div>
+
+    <aside class="section-stack">
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Outstanding value</h2>
+            </div>
+            <div class="card-body">
+                <div class="finance-meter">
+                    <div>
+                        <span>{{ insights.total_collected|inr }}</span>
+                        <small>Collected</small>
+                    </div>
+                    <div>
+                        <span>{{ insights.total_outstanding|inr }}</span>
+                        <small>Outstanding</small>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Lead sources</h2>
+            </div>
+            <div class="card-body">
+                {% if insights.source_counts %}
+                <div class="data-list">
+                    {% for source in insights.source_counts %}
+                    <div class="data-list-item">
+                        <span>{{ source[0] }}</span>
+                        <strong>{{ source[1] }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No source data yet.</p>
+                {% endif %}
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Open tasks</h2>
+            </div>
+            <div class="card-body">
+                {% if open_tasks %}
+                <div class="task-mini-list">
+                    {% for task in open_tasks %}
+                    <div class="task-mini-item">
+                        <div>
+                            <strong>{{ task.title }}</strong>
+                            <span>{{ task.owner }}{% if task.due_date %} · due {{ task.due_date|date_label }}{% endif %}</span>
+                        </div>
+                        <span class="badge badge-{{ task.priority|lower }}">{{ task.priority }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No open tasks.</p>
+                {% endif %}
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Recent campaigns</h2>
+            </div>
+            <div class="card-body">
+                {% if campaigns %}
+                <div class="data-list">
+                    {% for campaign in campaigns %}
+                    <div class="data-list-item">
+                        <span>{{ campaign.title }}</span>
+                        <strong>{{ campaign.patient_ids|length }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No campaigns created yet.</p>
+                {% endif %}
+            </div>
+        </article>
+    </aside>
+</section>
+
+<section class="card mt-4">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">Recent audit activity</h2>
+            <p class="card-kicker">Operational trail across patients, appointments, tasks, and campaigns</p>
+        </div>
+        {% if user and user.role == "admin" %}
+        <a href="{{ url_for('audit') }}" class="btn btn-ghost btn-sm">Open audit</a>
+        {% endif %}
+    </div>
+    <div class="activity-strip">
+        {% if insights.recent_activities %}
+            {% for activity in insights.recent_activities %}
+            <div class="activity-chip">
+                <strong>{{ activity.action }}</strong>
+                <span>{{ activity.subject }} · {{ activity.actor }}</span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">Audit activity will appear as staff work in the CRM.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

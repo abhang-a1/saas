@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Add Patient - DentaCare CRM{% endblock %}
+{% block page_eyebrow %}Patient intake{% endblock %}
+{% block page_title %}Add patient{% endblock %}
+{% block page_subtitle %}Create a complete CRM record with contact data, lead source, treatment value, consent, owner, and next action.{% endblock %}
+
+{% block header_actions %}
+<div class="quick-actions">
+    <a href="{{ url_for('patients') }}" class="btn btn-outline">Back to patients</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="form-shell">
+    <div class="form-shell-header">
+        <h2>Patient registration</h2>
+        <p>Capture the information a high-performing clinic needs before the first follow-up or appointment.</p>
+    </div>
+
+    <div class="form-shell-body">
+        {% if error %}
+        <div class="error-msg">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('add_patient') }}">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="name" class="form-label">Patient name</label>
+                    <input type="text" id="name" name="name" class="form-control" value="{{ patient.name if patient else '' }}" placeholder="Enter full patient name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone" class="form-label">Phone number</label>
+                    <input type="text" id="phone" name="phone" class="form-control" value="{{ patient.phone if patient else '' }}" placeholder="Enter contact number" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ patient.email if patient else '' }}" placeholder="Enter email address">
+                </div>
+
+                <div class="form-group">
+                    <label for="age" class="form-label">Age</label>
+                    <input type="text" id="age" name="age" class="form-control" value="{{ patient.age if patient else '' }}" placeholder="Enter age">
+                </div>
+
+                <div class="form-group">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select id="gender" name="gender" class="form-control">
+                        <option value="">Select gender</option>
+                        {% for gender in ["Female", "Male", "Other"] %}
+                        <option value="{{ gender }}" {% if patient and patient.gender == gender %}selected{% endif %}>{{ gender }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="stage" class="form-label">Current stage</label>
+                    <select id="stage" name="stage" class="form-control">
+                        {% for stage in patient_stages %}
+                        <option value="{{ stage }}" {% if (patient and patient.stage == stage) or (not patient and stage == "New Inquiry") %}selected{% endif %}>{{ stage }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="source" class="form-label">Lead source</label>
+                    <select id="source" name="source" class="form-control">
+                        {% for source in patient_sources %}
+                        <option value="{{ source }}" {% if (patient and patient.source == source) or (not patient and source == "Walk-in") %}selected{% endif %}>{{ source }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="priority" class="form-label">Priority</label>
+                    <select id="priority" name="priority" class="form-control">
+                        {% for priority in patient_priorities %}
+                        <option value="{{ priority }}" {% if (patient and patient.priority == priority) or (not patient and priority == "Warm") %}selected{% endif %}>{{ priority }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="owner" class="form-label">Relationship owner</label>
+                    <input type="text" id="owner" name="owner" class="form-control" value="{{ patient.owner if patient else user.name }}" placeholder="Staff owner">
+                </div>
+
+                <div class="form-group">
+                    <label for="communication_preference" class="form-label">Preferred channel</label>
+                    <select id="communication_preference" name="communication_preference" class="form-control">
+                        {% for preference in communication_prefs %}
+                        <option value="{{ preference }}" {% if (patient and patient.communication_preference == preference) or (not patient and preference == "WhatsApp") %}selected{% endif %}>{{ preference }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group full">
+                    <label for="treatment" class="form-label">Treatment interest / case type</label>
+                    <input type="text" id="treatment" name="treatment" class="form-control" value="{{ patient.treatment if patient else '' }}" placeholder="Example: Root canal, braces, implants, cleaning">
+                </div>
+
+                <div class="form-group">
+                    <label for="estimated_value" class="form-label">Estimated value</label>
+                    <input type="number" min="0" step="1" id="estimated_value" name="estimated_value" class="form-control" value="{{ patient.estimated_value if patient else '' }}" placeholder="Example: 45000">
+                </div>
+
+                <div class="form-group">
+                    <label for="amount_collected" class="form-label">Amount collected</label>
+                    <input type="number" min="0" step="1" id="amount_collected" name="amount_collected" class="form-control" value="{{ patient.amount_collected if patient else '' }}" placeholder="Example: 10000">
+                </div>
+
+                <div class="form-group">
+                    <label for="payment_status" class="form-label">Payment status</label>
+                    <select id="payment_status" name="payment_status" class="form-control">
+                        {% for status in payment_statuses %}
+                        <option value="{{ status }}" {% if (patient and patient.payment_status == status) or (not patient and status == "Not quoted") %}selected{% endif %}>{{ status }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="followup_date" class="form-label">Follow-up date</label>
+                    <input type="date" id="followup_date" name="followup_date" class="form-control" value="{{ patient.followup_date if patient else '' }}">
+                </div>
+
+                <div class="form-group full">
+                    <label for="next_action" class="form-label">Next action</label>
+                    <input type="text" id="next_action" name="next_action" class="form-control" value="{{ patient.next_action if patient else '' }}" placeholder="Example: Call to confirm consultation slot">
+                </div>
+
+                <div class="form-group full">
+                    <label for="tags" class="form-label">Tags</label>
+                    <input type="text" id="tags" name="tags" class="form-control" value="{{ patient.tags|join(', ') if patient and patient.tags else '' }}" placeholder="Example: implant, high-value, referral">
+                </div>
+
+                <div class="form-group full">
+                    <label for="notes" class="form-label">Clinical or front-desk notes</label>
+                    <textarea id="notes" name="notes" class="form-control" placeholder="Add inquiry context, concerns, expectations, or staff notes">{{ patient.notes if patient else '' }}</textarea>
+                </div>
+
+                <div class="form-group full">
+                    <label class="form-label">Consent</label>
+                    <div class="check-grid">
+                        <label><input type="checkbox" name="consent_whatsapp" checked> WhatsApp</label>
+                        <label><input type="checkbox" name="consent_sms"> SMS</label>
+                        <label><input type="checkbox" name="consent_email"> Email</label>
+                        <label><input type="checkbox" name="consent_marketing" checked> Marketing communication</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('patients') }}" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create CRM record</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

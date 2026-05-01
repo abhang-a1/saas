@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Trail - DentaCare CRM{% endblock %}
+{% block page_eyebrow %}Governance{% endblock %}
+{% block page_title %}Audit trail{% endblock %}
+{% block page_subtitle %}Review the latest operational activity across patient records, appointments, tasks, campaigns, and treatment plans.{% endblock %}
+
+{% block header_actions %}
+<div class="quick-actions">
+    <a href="{{ url_for('crm_command_center') }}" class="btn btn-outline">CRM cockpit</a>
+    <a href="{{ url_for('export_patients_csv') }}" class="btn btn-primary">Export patients</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="card">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">Operational activity</h2>
+            <p class="card-kicker">{{ activities|length }} latest events retained in this view</p>
+        </div>
+    </div>
+
+    {% if activities %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Actor</th>
+                    <th>Action</th>
+                    <th>Subject</th>
+                    <th>Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in activities %}
+                <tr>
+                    <td>
+                        <div class="cell-title">{{ activity.created_at[:10] if activity.created_at else "Today" }}</div>
+                        <div class="cell-subtitle">{{ activity.created_at[11:16] if activity.created_at and activity.created_at|length > 15 else "" }}</div>
+                    </td>
+                    <td>{{ activity.actor or "System" }}</td>
+                    <td><span class="badge badge-scheduled">{{ activity.action }}</span></td>
+                    <td>{{ activity.subject or "CRM" }}</td>
+                    <td>{{ activity.detail or "-" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="icon" aria-hidden="true">AU</div>
+        <h3>No audit activity yet</h3>
+        <p>Activity will appear as users create patients, schedule appointments, manage tasks, and prepare campaigns.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

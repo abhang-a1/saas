@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - DentaCare CRM{% endblock %}
+{% block page_eyebrow %}Clinic control center{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Welcome back, {{ user.name }}. Review appointments, revenue, patient pipeline, and urgent team work from one place.{% endblock %}
+
+{% block header_actions %}
+<div class="quick-actions">
+    <a href="{{ url_for('crm_command_center') }}" class="btn btn-outline">CRM cockpit</a>
+    <a href="{{ url_for('add_appointment') }}" class="btn btn-outline">Schedule</a>
+    <a href="{{ url_for('add_patient') }}" class="btn btn-primary">Add patient</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="stats-grid">
+    <article class="stat-card teal">
+        <div class="stat-top">
+            <div>
+                <p class="stat-label">Active patients</p>
+                <h2 class="stat-value">{{ stats.active_patients }}</h2>
+                <p class="stat-note">{{ stats.total_patients }} total records in the CRM.</p>
+            </div>
+            <div class="stat-icon teal" aria-hidden="true">PT</div>
+        </div>
+    </article>
+
+    <article class="stat-card green">
+        <div class="stat-top">
+            <div>
+                <p class="stat-label">Today appointments</p>
+                <h2 class="stat-value">{{ stats.today_appointments }}</h2>
+                <p class="stat-note">{{ stats.scheduled_appointments }} scheduled appointments open.</p>
+            </div>
+            <div class="stat-icon green" aria-hidden="true">AP</div>
+        </div>
+    </article>
+
+    <article class="stat-card gold">
+        <div class="stat-top">
+            <div>
+                <p class="stat-label">Forecast value</p>
+                <h2 class="stat-value">{{ stats.total_estimated|inr }}</h2>
+                <p class="stat-note">{{ stats.total_outstanding|inr }} still outstanding.</p>
+            </div>
+            <div class="stat-icon gold" aria-hidden="true">RV</div>
+        </div>
+    </article>
+
+    <article class="stat-card red">
+        <div class="stat-top">
+            <div>
+                <p class="stat-label">Execution pressure</p>
+                <h2 class="stat-value">{{ stats.open_tasks }}</h2>
+                <p class="stat-note">{{ stats.overdue_tasks }} overdue tasks need review.</p>
+            </div>
+            <div class="stat-icon red" aria-hidden="true">TS</div>
+        </div>
+    </article>
+</section>
+
+<section class="page-header">
+    <div>
+        <h2>Daily operating rhythm</h2>
+        <p>Move directly into the workflows staff use most during a busy clinic day.</p>
+    </div>
+
+    <div class="quick-actions">
+        <a href="{{ url_for('patients') }}" class="quick-btn">Patient directory</a>
+        <a href="{{ url_for('tasks') }}" class="quick-btn">Team task board</a>
+        <a href="{{ url_for('followups') }}" class="quick-btn">Follow-up queue</a>
+        <a href="{{ url_for('broadcast') }}" class="quick-btn">Campaigns</a>
+    </div>
+</section>
+
+<section class="grid-side">
+    <article class="card">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">Today's appointment flow</h2>
+                <p class="card-kicker">Sorted by scheduled visit time</p>
+            </div>
+            <a href="{{ url_for('appointments') }}" class="btn btn-ghost btn-sm">View all</a>
+        </div>
+
+        {% if today_appts %}
+            <div class="appt-list">
+                {% for appt in today_appts %}
+                    <div class="appt-list-item">
+                        <div class="appt-time">{{ appt.time or "--:--" }}</div>
+
+                        <div class="appt-info">
+                            <div class="appt-name">{{ appt.patient_name }}</div>
+                            <div class="appt-treatment">
+                                {{ appt.treatment or "General consultation" }}
+                                {% if appt.provider %} · {{ appt.provider }}{% endif %}
+                                {% if appt.room %} · {{ appt.room }}{% endif %}
+                            </div>
+                        </div>
+
+                        <span class="badge badge-{{ (appt.status or 'scheduled')|lower|replace(' ', '-') }}">
+                            {{ appt.status or "Scheduled" }}
+                        </span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="icon" aria-hidden="true">AP</div>
+                <h3>No appointments scheduled today</h3>
+                <p>The schedule is clear for today. Book a new appointment or review upcoming visits.</p>
+                <div class="form-actions" style="justify-content:center;">
+                    <a href="{{ url_for('add_appointment') }}" class="btn btn-primary">Schedule appointment</a>
+                </div>
+            </div>
+        {% endif %}
+    </article>
+
+    <aside class="section-stack">
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Priority tasks</h2>
+                <a href="{{ url_for('tasks') }}" class="btn btn-ghost btn-sm">Open board</a>
+            </div>
+            <div class="card-body">
+                {% if due_tasks %}
+                <div class="task-mini-list">
+                    {% for task in due_tasks %}
+                    <div class="task-mini-item">
+                        <div>
+                            <strong>{{ task.title }}</strong>
+                            <span>{{ task.owner }}{% if task.due_date %} · {{ task.due_date|date_label }}{% endif %}</span>
+                        </div>
+                        <span class="badge badge-{{ task.priority|lower }}">{{ task.priority }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No due or overdue tasks right now.</p>
+                {% endif %}
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Pipeline snapshot</h2>
+            </div>
+            <div class="card-body">
+                <div class="data-list">
+                    {% for stage in stats.stage_counts[:5] %}
+                    <div class="data-list-item">
+                        <span>{{ stage.stage }}</span>
+                        <strong>{{ stage.count }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">System access</h2>
+            </div>
+            <div class="card-body" style="display:grid; gap: 0.85rem;">
+                <div class="info-item">
+                    <label>Signed in user</label>
+                    <span>{{ user.name }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Role</label>
+                    <span>{{ user.role|capitalize }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Username</label>
+                    <span>{{ user.username }}</span>
+                </div>
+            </div>
+        </article>
+    </aside>
+</section>
+
+<section class="card mt-4">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">Recently added patients</h2>
+            <p class="card-kicker">Latest records with CRM intelligence fields</p>
+        </div>
+        <a href="{{ url_for('patients') }}" class="btn btn-ghost btn-sm">Open directory</a>
+    </div>
+
+    {% if recent_patients %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Stage</th>
+                        <th>Owner</th>
+                        <th>Value</th>
+                        <th>Follow-up</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in recent_patients %}
+                        <tr>
+                            <td>
+                                <div class="cell-title">{{ patient.name }}</div>
+                                <div class="cell-subtitle">{{ patient.source or "Walk-in" }}{% if patient.phone %} · {{ patient.phone }}{% endif %}</div>
+                            </td>
+                            <td>
+                                <span class="badge badge-{{ (patient.stage or 'new-inquiry')|lower|replace(' ', '-') }}">
+                                    {{ patient.stage or "New Inquiry" }}
+                                </span>
+                            </td>
+                            <td>{{ patient.owner or "Unassigned" }}</td>
+                            <td>{{ patient.estimated_value|inr }}</td>
+                            <td>{{ patient.followup_date|date_label if patient.followup_date else "Not scheduled" }}</td>
+                            <td style="text-align:right;">
+                                <a href="{{ url_for('patient_profile', pid=patient.id) }}" class="btn btn-outline btn-sm">View</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="icon" aria-hidden="true">PT</div>
+            <h3>No patients added yet</h3>
+            <p>Create your first patient record so the dashboard can start reflecting real clinic activity.</p>
+            <div class="form-actions" style="justify-content:center;">
+                <a href="{{ url_for('add_patient') }}" class="btn btn-primary">Create patient record</a>
+            </div>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

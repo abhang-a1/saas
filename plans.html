@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#161b1f">
+    <title>Plans — DentaCare CRM</title>
+
+    <link rel="preconnect" href="https://api.fontshare.com">
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-page">
+    <div class="login-shell">
+        <aside class="login-aside">
+            <div>
+                <div class="login-brand">
+                    <span class="brand-mark" aria-hidden="true" style="width:3rem;height:3rem;border-radius:1.1rem;">
+                        <svg viewBox="0 0 64 64" fill="none" role="img">
+                            <rect x="8" y="8" width="48" height="48" rx="16" stroke="currentColor" stroke-width="4"></rect>
+                            <path d="M24 24C24 19.582 27.582 16 32 16C36.418 16 40 19.582 40 24V29C40 36.18 36.18 43.14 32 48C27.82 43.14 24 36.18 24 29V24Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"></path>
+                            <path d="M29 25.5H35" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
+                        </svg>
+                    </span>
+                    <div class="login-brand-copy">
+                        <strong>DentaCare</strong>
+                        <span>Practice CRM</span>
+                    </div>
+                </div>
+
+                <div class="login-copy" style="margin-top:2.1rem;">
+                    <h1>Choose your plan.<br>Unlock Pro access.</h1>
+                    <p>Pick a billing cycle that fits your clinic. Payments are handled securely on Stripe.</p>
+
+                    <div class="login-points">
+                        {% for feature in (catalog or {}).get("features", []) %}
+                        <div class="login-point">
+                            <div class="login-point-mark" aria-hidden="true"></div>
+                            <div>
+                                <strong>{{ feature }}</strong>
+                                <span>Included in Pro.</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <p class="login-footer-note">
+                {% if (status or {}).get("status") == "trial" %}
+                    Trial active. Upgrade now to ensure uninterrupted access.
+                {% else %}
+                    Trial ended. Upgrade to continue using the CRM.
+                {% endif %}
+            </p>
+        </aside>
+
+        <section class="login-panel" aria-label="Plans">
+            <div class="login-card">
+                <div class="login-kicker">Billing</div>
+                <h2>Pricing</h2>
+                <p>Monthly, quarterly, or yearly — upgrade instantly.</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div style="margin-top:1rem; display:grid; gap:.6rem;">
+                            {% for category, message in messages %}
+                                <div class="flash flash-{{ category }}">
+                                    <div class="flash-dot" aria-hidden="true"></div>
+                                    <p>{{ message }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <div class="plan-grid" style="margin-top:1.2rem;">
+                    {% for plan in (catalog or {}).get("plans", []) %}
+                    <div class="plan-card {% if plan.highlight %}highlight{% endif %}">
+                        <div class="plan-top">
+                            <div>
+                                <div class="plan-name">
+                                    <strong>{{ plan.name }}</strong>
+                                    {% if plan.badge %}
+                                        <span class="plan-badge">{{ plan.badge }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="plan-sub">{{ plan.label }}</div>
+                            </div>
+                            <div class="plan-price">
+                                <span class="plan-currency">{{ (catalog or {}).get("currency_symbol", "₹") }}</span>
+                                <span class="plan-amount">{{ plan.price }}</span>
+                            </div>
+                        </div>
+                        <div class="plan-period">{{ plan.period }}</div>
+
+                        <a href="{{ url_for('checkout', plan_id=plan.id) }}" class="btn btn-primary login-btn" style="margin-top:1rem;">
+                            {{ plan.cta }}
+                        </a>
+
+                        {% if not plan.stripe_link %}
+                            <div class="login-footer-note" style="margin-top:.75rem;">
+                                Admin: set the Stripe Payment Link env var for this plan to enable payments.
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="auth-links" style="margin-top:1.2rem;">
+                    <a class="auth-link" href="{{ url_for('logout') }}">Sign out</a>
+                    <span class="auth-divider" aria-hidden="true">•</span>
+                    <a class="auth-link" href="{{ url_for('forgot_password') }}">Forgot password?</a>
+                </div>
+
+                <div class="auth-note" style="margin-top:1rem;">
+                    <p style="margin:0; color:var(--color-text-muted); font-size:var(--text-sm);">
+                        Payment redirect uses Stripe Payment Links. After you configure Stripe + webhooks, we can auto-activate Pro immediately after payment.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
+

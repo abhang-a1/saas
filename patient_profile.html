@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block title %}{{ patient.name }} - DentaCare CRM{% endblock %}
+{% block page_eyebrow %}Patient command view{% endblock %}
+{% block page_title %}{{ patient.name }}{% endblock %}
+{% block page_subtitle %}Relationship intelligence, treatment opportunity, tasks, appointments, consents, and timeline in one patient workspace.{% endblock %}
+
+{% block header_actions %}
+<div class="quick-actions">
+    <a href="{{ url_for('edit_patient', pid=patient.id) }}" class="btn btn-primary">Edit patient</a>
+    <a href="{{ url_for('add_appointment', pid=patient.id) }}" class="btn btn-outline">Book appointment</a>
+    <a href="{{ url_for('patients') }}" class="btn btn-outline">Back</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="card mb-6">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {{ patient.name[0] if patient.name else "P" }}
+        </div>
+
+        <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+                <h2 class="profile-name">{{ patient.name }}</h2>
+                <span class="badge badge-{{ (patient.stage or 'new-inquiry')|lower|replace(' ', '-') }}">{{ patient.stage or "New Inquiry" }}</span>
+                <span class="score-pill">Score {{ patient.lead_score }}</span>
+            </div>
+
+            <div class="profile-meta">
+                {{ patient.treatment or "General dentistry" }}
+                {% if patient.phone %} · {{ patient.phone }}{% endif %}
+                {% if patient.email %} · {{ patient.email }}{% endif %}
+            </div>
+
+            {% if patient.tags %}
+            <div class="tag-list mt-4">
+                {% for tag in patient.tags %}
+                <span>{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card teal">
+        <div class="stat-top">
+            <div>
+                <p class="stat-label">Forecast</p>
+                <h2 class="stat-value">{{ financials.estimated|inr }}</h2>
+                <p class="stat-note">Estimated treatment opportunity.</p>
+            </div>
+            <div class="stat-icon teal" aria-hidden="true">PV</div>
+        </div>
+    </article>
+    <article class="stat-card green">
+        <div class="stat-top">
+            <div>
+                <p class="stat-label">Collected</p>
+                <h2 class="stat-value">{{ financials.collected|inr }}</h2>
+                <p class="stat-note">{{ financials.paid_percent }}% of opportunity value.</p>
+            </div>
+            <div class="stat-icon green" aria-hidden="true">RC</div>
+        </div>
+    </article>
+    <article class="stat-card gold">
+        <div class="stat-top">
+            <div>
+                <p class="stat-label">Outstanding</p>
+                <h2 class="stat-value">{{ financials.outstanding|inr }}</h2>
+                <p class="stat-note">{{ patient.payment_status or "Not quoted" }}</p>
+            </div>
+            <div class="stat-icon gold" aria-hidden="true">AR</div>
+        </div>
+    </article>
+    <article class="stat-card red">
+        <div class="stat-top">
+            <div>
+                <p class="stat-label">Open tasks</p>
+                <h2 class="stat-value">{{ tasks|length }}</h2>
+                <p class="stat-note">Patient-specific execution work.</p>
+            </div>
+            <div class="stat-icon red" aria-hidden="true">TS</div>
+        </div>
+    </article>
+</section>
+
+<section class="grid-side">
+    <div class="section-stack">
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Patient intelligence</h2>
+            </div>
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Owner</label>
+                        <span>{{ patient.owner or "Unassigned" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Source</label>
+                        <span>{{ patient.source or "Walk-in" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Priority</label>
+                        <span>{{ patient.priority or "Warm" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Follow-up date</label>
+                        <span>{{ patient.followup_date|date_label if patient.followup_date else "Not scheduled" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Next action</label>
+                        <span>{{ patient.next_action or "No next action" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Preferred channel</label>
+                        <span>{{ patient.communication_preference or "WhatsApp" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Age</label>
+                        <span>{{ patient.age or "Not provided" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Gender</label>
+                        <span>{{ patient.gender or "Not provided" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Created</label>
+                        <span>{{ patient.created_at[:10] if patient.created_at else "-" }}</span>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Treatment plans</h2>
+                    <p class="card-kicker">Track quoted procedures and treatment acceptance</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_treatment_plan', pid=patient.id) }}" class="inline-form-grid">
+                    <input name="name" class="form-control" type="text" placeholder="Plan name" required>
+                    <input name="quoted_amount" class="form-control" type="number" min="0" step="1" placeholder="Quoted amount">
+                    <select name="status" class="form-control">
+                        {% for status in treatment_statuses %}
+                        <option value="{{ status }}">{{ status }}</option>
+                        {% endfor %}
+                    </select>
+                    <input name="target_date" class="form-control" type="date">
+                    <input name="notes" class="form-control" type="text" placeholder="Notes">
+                    <button type="submit" class="btn btn-primary">Add plan</button>
+                </form>
+            </div>
+            {% if patient.treatment_plans %}
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Status</th>
+                            <th>Value</th>
+                            <th>Target</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plan in patient.treatment_plans|reverse %}
+                        <tr>
+                            <td>
+                                <div class="cell-title">{{ plan.name }}</div>
+                                <div class="cell-subtitle">{{ plan.created_by or "System" }}</div>
+                            </td>
+                            <td><span class="badge badge-{{ (plan.status or 'proposed')|lower|replace(' ', '-') }}">{{ plan.status }}</span></td>
+                            <td>{{ plan.quoted_amount|inr }}</td>
+                            <td>{{ plan.target_date|date_label if plan.target_date else "No target" }}</td>
+                            <td>{{ plan.notes or "-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </article>
+
+        <article class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Appointment history</h2>
+                </div>
+                <a href="{{ url_for('add_appointment', pid=patient.id) }}" class="btn btn-ghost btn-sm">Add appointment</a>
+            </div>
+
+            {% if appointments %}
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Treatment</th>
+                                <th>Provider</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appt in appointments %}
+                            <tr>
+                                <td>{{ appt.date|date_label if appt.date else "-" }}</td>
+                                <td>{{ appt.time or "-" }}</td>
+                                <td>{{ appt.treatment or "General consultation" }}</td>
+                                <td>{{ appt.provider or "Dr. Sharma" }}</td>
+                                <td><span class="badge badge-{{ (appt.status or 'scheduled')|lower|replace(' ', '-') }}">{{ appt.status or "Scheduled" }}</span></td>
+                                <td>{{ appt.notes or "-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="icon" aria-hidden="true">AP</div>
+                    <h3>No appointments yet</h3>
+                    <p>Create the first booking to start tracking visits and attendance outcomes.</p>
+                </div>
+            {% endif %}
+        </article>
+
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Primary notes</h2>
+            </div>
+            <div class="card-body">
+                {% if patient.notes %}
+                    <p style="max-width: 100%; white-space: pre-wrap;">{{ patient.notes }}</p>
+                {% else %}
+                    <p class="text-muted">No primary notes recorded yet.</p>
+                {% endif %}
+            </div>
+        </article>
+    </div>
+
+    <aside class="section-stack">
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Add task</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_patient_task', pid=patient.id) }}" class="stack-form">
+                    <input name="title" class="form-control" type="text" placeholder="Next action" required>
+                    <input name="due_date" class="form-control" type="date">
+                    <select name="priority" class="form-control">
+                        {% for priority in task_priorities %}
+                        <option value="{{ priority }}">{{ priority }}</option>
+                        {% endfor %}
+                    </select>
+                    <input name="owner" class="form-control" type="text" value="{{ patient.owner }}" placeholder="Owner">
+                    <input name="type" class="form-control" type="text" placeholder="Follow-up, Recall, Billing">
+                    <button type="submit" class="btn btn-primary">Add task</button>
+                </form>
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Open patient tasks</h2>
+            </div>
+            <div class="card-body">
+                {% if tasks %}
+                <div class="task-mini-list">
+                    {% for task in tasks %}
+                    <div class="task-mini-item">
+                        <div>
+                            <strong>{{ task.title }}</strong>
+                            <span>{{ task.owner }}{% if task.due_date %} · {{ task.due_date|date_label }}{% endif %}</span>
+                        </div>
+                        <form method="POST" action="{{ url_for('update_task_status', tid=task.id) }}">
+                            <input type="hidden" name="status" value="Done">
+                            <button type="submit" class="btn btn-success btn-sm">Done</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No open patient tasks.</p>
+                {% endif %}
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Communication consent</h2>
+            </div>
+            <div class="card-body">
+                <div class="data-list">
+                    <div class="data-list-item"><span>WhatsApp</span><strong>{{ "Yes" if patient.consent.whatsapp else "No" }}</strong></div>
+                    <div class="data-list-item"><span>SMS</span><strong>{{ "Yes" if patient.consent.sms else "No" }}</strong></div>
+                    <div class="data-list-item"><span>Email</span><strong>{{ "Yes" if patient.consent.email else "No" }}</strong></div>
+                    <div class="data-list-item"><span>Marketing</span><strong>{{ "Yes" if patient.consent.marketing else "No" }}</strong></div>
+                </div>
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Timeline</h2>
+            </div>
+
+            <div class="card-body">
+                {% if patient.history %}
+                    <ul class="timeline">
+                        {% for item in patient.history|reverse %}
+                        <li class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div>
+                                <div class="cell-title">{{ item.note }}</div>
+                                <div class="cell-subtitle">{{ item.date }}{% if item.by %} · {{ item.by }}{% endif %}</div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No history recorded yet.</p>
+                {% endif %}
+            </div>
+        </article>
+    </aside>
+</section>
+{% endblock %}

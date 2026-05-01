@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Tasks - DentaCare CRM{% endblock %}
+{% block page_eyebrow %}Team execution{% endblock %}
+{% block page_title %}Tasks{% endblock %}
+{% block page_subtitle %}Manage follow-ups, recovery calls, recalls, treatment plan actions, and internal work owned by the team.{% endblock %}
+
+{% block header_actions %}
+<div class="quick-actions">
+    <a href="{{ url_for('crm_command_center') }}" class="btn btn-outline">CRM cockpit</a>
+    <a href="{{ url_for('patients') }}" class="btn btn-outline">Patients</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="grid-side">
+    <article class="form-shell">
+        <div class="form-shell-header">
+            <h2>Create task</h2>
+            <p>Assign clear next actions to a patient record or create a general team task.</p>
+        </div>
+        <div class="form-shell-body">
+            <form method="POST" action="{{ url_for('tasks') }}">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label for="title" class="form-label">Task title</label>
+                        <input id="title" name="title" class="form-control" type="text" placeholder="Example: Call patient to confirm implant consultation" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="patient_id" class="form-label">Patient</label>
+                        <select id="patient_id" name="patient_id" class="form-control">
+                            <option value="">General task</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.name }}{% if patient.phone %} - {{ patient.phone }}{% endif %}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="due_date" class="form-label">Due date</label>
+                        <input id="due_date" name="due_date" class="form-control" type="date">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="priority" class="form-label">Priority</label>
+                        <select id="priority" name="priority" class="form-control">
+                            {% for priority in task_priorities %}
+                            <option value="{{ priority }}">{{ priority }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="owner" class="form-label">Owner</label>
+                        <select id="owner" name="owner" class="form-control">
+                            <option value="">Assign to me</option>
+                            {% for owner in owners %}
+                            <option value="{{ owner }}">{{ owner }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="type" class="form-label">Task type</label>
+                        <input id="type" name="type" class="form-control" type="text" placeholder="Follow-up, Recovery, Recall, Treatment plan, Billing">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create task</button>
+                </div>
+            </form>
+        </div>
+    </article>
+
+    <aside class="card">
+        <div class="card-header">
+            <h2 class="card-title">Task filters</h2>
+        </div>
+        <div class="card-body">
+            <div class="segmented-actions">
+                {% for status in ["Open", "In Progress", "Done", "All"] %}
+                <a href="{{ url_for('tasks', status=status) }}" class="quick-btn {% if selected_status == status %}selected{% endif %}">{{ status }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </aside>
+</section>
+
+<section class="card mt-4">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">Task register</h2>
+            <p class="card-kicker">{{ tasks|length }} task{% if tasks|length != 1 %}s{% endif %} in this view</p>
+        </div>
+    </div>
+
+    {% if tasks %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Patient</th>
+                    <th>Owner</th>
+                    <th>Due</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                {% set patient = patient_lookup.get(task.patient_id) if task.patient_id else none %}
+                <tr>
+                    <td>
+                        <div class="cell-title">{{ task.title }}</div>
+                        <div class="cell-subtitle">{{ task.type or "Follow-up" }} · created {{ task.created_at[:10] if task.created_at else "today" }}</div>
+                    </td>
+                    <td>
+                        {% if patient %}
+                            <a href="{{ url_for('patient_profile', pid=patient.id) }}" class="cell-title">{{ patient.name }}</a>
+                            <div class="cell-subtitle">{{ patient.phone or patient.stage }}</div>
+                        {% else %}
+                            <div class="cell-title">General</div>
+                            <div class="cell-subtitle">No linked patient</div>
+                        {% endif %}
+                    </td>
+                    <td>{{ task.owner or "Unassigned" }}</td>
+                    <td>{{ task.due_date|date_label if task.due_date else "No date" }}</td>
+                    <td><span class="badge badge-{{ task.priority|lower }}">{{ task.priority }}</span></td>
+                    <td><span class="badge badge-{{ task.status|lower|replace(' ', '-') }}">{{ task.status }}</span></td>
+                    <td style="text-align:right;">
+                        <div style="display:flex; gap:0.5rem; justify-content:flex-end; flex-wrap:wrap;">
+                            {% if task.status != "Done" %}
+                            <form method="POST" action="{{ url_for('update_task_status', tid=task.id) }}">
+                                <input type="hidden" name="status" value="Done">
+                                <button type="submit" class="btn btn-success btn-sm">Done</button>
+                            </form>
+                            {% endif %}
+                            {% if task.status == "Open" %}
+                            <form method="POST" action="{{ url_for('update_task_status', tid=task.id) }}">
+                                <input type="hidden" name="status" value="In Progress">
+                                <button type="submit" class="btn btn-outline btn-sm">Start</button>
+                            </form>
+                            {% elif task.status == "Done" %}
+                            <form method="POST" action="{{ url_for('update_task_status', tid=task.id) }}">
+                                <input type="hidden" name="status" value="Open">
+                                <button type="submit" class="btn btn-outline btn-sm">Reopen</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="icon" aria-hidden="true">TS</div>
+        <h3>No tasks in this view</h3>
+        <p>Create the first team task or switch filters to review completed work.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

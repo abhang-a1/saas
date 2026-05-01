@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DentaCare CRM{% endblock %}</title>
+
+    <link rel="preconnect" href="https://api.fontshare.com">
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
+            <div class="sidebar-top">
+                <a href="{{ url_for('dashboard') }}" class="brand" aria-label="DentaCare CRM home">
+                    <span class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 64 64" fill="none" role="img">
+                            <rect x="8" y="8" width="48" height="48" rx="16" stroke="currentColor" stroke-width="4"></rect>
+                            <path d="M24 24C24 19.582 27.582 16 32 16C36.418 16 40 19.582 40 24V29C40 36.18 36.18 43.14 32 48C27.82 43.14 24 36.18 24 29V24Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"></path>
+                            <path d="M29 25.5H35" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
+                        </svg>
+                    </span>
+                    <span class="brand-copy">
+                        <strong>DentaCare</strong>
+                        <small>Practice CRM</small>
+                    </span>
+                </a>
+
+                <button
+                    type="button"
+                    class="sidebar-close"
+                    aria-label="Close navigation"
+                    onclick="closeSidebar()"
+                >
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+
+            <div class="sidebar-section">
+                <p class="sidebar-label">Overview</p>
+
+                <nav class="sidebar-nav">
+                    <a href="{{ url_for('dashboard') }}" class="nav-link {% if active == 'dashboard' %}active{% endif %}">
+                        <span class="nav-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M4 13.5L12 5L20 13.5V19A1 1 0 0 1 19 20H5A1 1 0 0 1 4 19V13.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                <path d="M9 20V12H15V20" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+
+                    <a href="{{ url_for('crm_command_center') }}" class="nav-link {% if active == 'crm' %}active{% endif %}">
+                        <span class="nav-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M4 19V5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M4 19H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M8 15L11 12L14 14L19 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        <span class="nav-text">CRM cockpit</span>
+                    </a>
+
+                    <a href="{{ url_for('patients') }}" class="nav-link {% if active == 'patients' %}active{% endif %}">
+                        <span class="nav-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M4 21C4 17.6863 7.58172 15 12 15C16.4183 15 20 17.6863 20 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <span class="nav-text">Patients</span>
+                    </a>
+
+                    <a href="{{ url_for('appointments') }}" class="nav-link {% if active == 'appointments' %}active{% endif %}">
+                        <span class="nav-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="5" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M8 3V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M16 3V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M3 10H21" stroke="currentColor" stroke-width="1.8"/>
+                            </svg>
+                        </span>
+                        <span class="nav-text">Appointments</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="sidebar-section">
+                <p class="sidebar-label">Retention</p>
+
+                <nav class="sidebar-nav">
+                    <a href="{{ url_for('followups') }}" class="nav-link {% if active == 'followups' %}active{% endif %}">
+                        <span class="nav-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 12A8 8 0 1 1 17.66 6.34" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M20 4V10H14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        <span class="nav-text">Follow-ups</span>
+                    </a>
+
+                    <a href="{{ url_for('tasks') }}" class="nav-link {% if active == 'tasks' %}active{% endif %}">
+                        <span class="nav-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M8 7H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M8 12H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M8 17H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M4 7.2L4.6 7.8L6 6.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M4 12.2L4.6 12.8L6 11.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M4 17.2L4.6 17.8L6 16.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        <span class="nav-text">Tasks</span>
+                    </a>
+
+                    <a href="{{ url_for('broadcast') }}" class="nav-link {% if active == 'broadcast' %}active{% endif %}">
+                        <span class="nav-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M4 12L20 4V20L4 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                <path d="M4 12H10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <span class="nav-text">Broadcast</span>
+                    </a>
+
+                    <a href="{{ url_for('offers') }}" class="nav-link {% if active == 'offers' %}active{% endif %}">
+                        <span class="nav-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 12V7.5A2.5 2.5 0 0 0 17.5 5H6.5A2.5 2.5 0 0 0 4 7.5V12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M4 12V16.5A2.5 2.5 0 0 0 6.5 19H17.5A2.5 2.5 0 0 0 20 16.5V12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M8 9H16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M9 15H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <span class="nav-text">Offers</span>
+                    </a>
+
+                    <a href="{{ url_for('aftercare') }}" class="nav-link {% if active == 'aftercare' %}active{% endif %}">
+                        <span class="nav-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M12 3C9.5 3 7.5 5 7.5 7.5C7.5 10.5 10 13 12 15C14 13 16.5 10.5 16.5 7.5C16.5 5 14.5 3 12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                <path d="M12 15V21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M9 18H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <span class="nav-text">Aftercare</span>
+                    </a>
+                </nav>
+            </div>
+
+
+
+            <div class="sidebar-footer">
+                <div class="workspace-card">
+                    <div class="workspace-avatar">
+                        {{ user.name[0] if user and user.name else "U" }}
+                    </div>
+
+                    <div class="workspace-meta">
+                        <strong>{{ user.name if user else "User" }}</strong>
+                        <span>{{ user.role|capitalize if user and user.role else "Staff" }}</span>
+                    </div>
+                </div>
+
+                {% if subscription and subscription.status == "trial" %}
+                <a href="{{ url_for('upgrade') }}" class="upgrade-link">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L20 6V12C20 16.6 16.9 20.4 12 22C7.1 20.4 4 16.6 4 12V6L12 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                            <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span>Upgrade ({{ subscription.days_left }}d left)</span>
+                </a>
+                {% endif %}
+
+                <a href="{{ url_for('logout') }}" class="logout-link">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M10 17L15 12L10 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M15 12H4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            <path d="M20 20V4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </span>
+                    <span>Sign out</span>
+                </a>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+        <div class="app-main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button
+                        type="button"
+                        class="menu-toggle"
+                        aria-label="Open navigation"
+                        onclick="openSidebar()"
+                    >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+
+                    <div class="page-intro">
+                        <p class="eyebrow">{% block page_eyebrow %}Dental practice operations{% endblock %}</p>
+                        <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                        <p class="page-subtitle">{% block page_subtitle %}Manage patient care, appointments, and outreach from one system.{% endblock %}</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="topbar-date" id="topbarDate"></div>
+
+                    {% if subscription and subscription.status == "trial" %}
+                        <a href="{{ url_for('upgrade') }}" class="trial-pill" title="Upgrade to keep access after trial">
+                            <span class="trial-pill-dot" aria-hidden="true"></span>
+                            <span>Trial: {{ subscription.days_left }}d left</span>
+                            <span class="trial-pill-cta">Upgrade</span>
+                        </a>
+                    {% endif %}
+
+                    {% block header_actions %}
+                    <a href="{{ url_for('add_patient') }}" class="btn btn-primary">New patient</a>
+                    {% endblock %}
+                </div>
+            </header>
+
+            <main class="page-main" id="main-content">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <section class="flash-stack" aria-label="Notifications">
+                            {% for category, message in messages %}
+                                <div class="flash flash-{{ category }}">
+                                    <div class="flash-dot" aria-hidden="true"></div>
+                                    <p>{{ message }}</p>
+                                </div>
+                            {% endfor %}
+                        </section>
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById("sidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+        const topbarDate = document.getElementById("topbarDate");
+
+        function openSidebar() {
+            sidebar.classList.add("open");
+            sidebarOverlay.classList.add("show");
+            document.body.classList.add("nav-open");
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove("open");
+            sidebarOverlay.classList.remove("show");
+            document.body.classList.remove("nav-open");
+        }
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                closeSidebar();
+            }
+        });
+
+        if (topbarDate) {
+            const formatter = new Intl.DateTimeFormat("en-IN", {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            });
+            topbarDate.textContent = formatter.format(new Date());
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

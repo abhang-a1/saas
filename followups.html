@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Follow-ups — DentaCare CRM{% endblock %}
+{% block page_eyebrow %}Retention workflow{% endblock %}
+{% block page_title %}Follow-ups{% endblock %}
+{% block page_subtitle %}Patients currently needing attention based on care stage, missed visits, or scheduled recall timing.{% endblock %}
+
+{% block header_actions %}
+<div class="quick-actions">
+    <a href="{{ url_for('broadcast') }}" class="btn btn-primary">Create broadcast</a>
+    <a href="{{ url_for('appointments') }}" class="btn btn-outline">Open appointments</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div>
+        <h2>Follow-up queue</h2>
+        <p>{{ patients|length }} patient{% if patients|length != 1 %}s{% endif %} currently require review or recall action.</p>
+    </div>
+
+    <div class="quick-actions">
+        <a href="{{ url_for('patients') }}" class="quick-btn">Patient directory</a>
+        <a href="{{ url_for('dashboard') }}" class="quick-btn">Return to dashboard</a>
+    </div>
+</section>
+
+{% if patients %}
+<section class="card">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">Patients needing attention</h2>
+        </div>
+        <div class="text-muted" style="font-size: var(--text-sm);">
+            Generated from live follow-up and stage rules.
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Score</th>
+                    <th>Contact</th>
+                    <th>Treatment</th>
+                    <th>Current stage</th>
+                    <th>Follow-up date</th>
+                    <th>Owner / action</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:0.85rem;">
+                            <div class="profile-avatar" style="width:2.8rem; height:2.8rem; border-radius:0.95rem; font-size:0.95rem;">
+                                {{ patient.name[0] if patient.name else "P" }}
+                            </div>
+                            <div>
+                                <div class="cell-title">{{ patient.name or "Unnamed patient" }}</div>
+                                <div class="cell-subtitle">
+                                    {% if patient.email %}
+                                        {{ patient.email }}
+                                    {% else %}
+                                        No email recorded
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="score-pill">{{ patient.lead_score or 0 }}</span>
+                    </td>
+
+                    <td>
+                        <div class="cell-title">{{ patient.phone or "No phone recorded" }}</div>
+                        <div class="cell-subtitle">
+                            {% if patient.gender or patient.age %}
+                                {{ patient.gender or "—" }}{% if patient.gender and patient.age %}, {% endif %}{{ patient.age ~ " yrs" if patient.age else "" }}
+                            {% else %}
+                                Demographics not completed
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="cell-title">{{ patient.treatment or "General dentistry" }}</div>
+                        <div class="cell-subtitle">Treatment context</div>
+                    </td>
+
+                    <td>
+                        <span class="badge badge-{{ (patient.stage or 'follow-up-due')|lower|replace(' ', '-') }}">
+                            {{ patient.stage or "Follow-up Due" }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {% if patient.followup_date %}
+                            <div class="cell-title">{{ patient.followup_date }}</div>
+                            <div class="cell-subtitle">Scheduled recall date</div>
+                        {% else %}
+                            <div class="cell-title">Not scheduled</div>
+                            <div class="cell-subtitle">Attention triggered by stage</div>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <div class="cell-title">{{ patient.owner or "Unassigned" }}</div>
+                        <div class="cell-subtitle">{{ patient.next_action or "No next action" }}</div>
+                    </td>
+
+                    <td style="text-align:right;">
+                        <div style="display:flex; justify-content:flex-end; gap:0.5rem; flex-wrap:wrap;">
+                            <a href="{{ url_for('patient_profile', pid=patient.id) }}" class="btn btn-outline btn-sm">View</a>
+                            <a href="{{ url_for('edit_patient', pid=patient.id) }}" class="btn btn-outline btn-sm">Edit</a>
+                            <a href="{{ url_for('add_appointment', pid=patient.id) }}" class="btn btn-primary btn-sm">Book</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% else %}
+<section class="card">
+    <div class="empty-state">
+        <div class="icon" aria-hidden="true">FU</div>
+        <h3>All caught up</h3>
+        <p>No pending follow-ups are currently identified by the system. Patient recall and missed-visit attention queues are clear for now.</p>
+        <div class="form-actions" style="justify-content:center;">
+            <a href="{{ url_for('patients') }}" class="btn btn-outline">Open patient directory</a>
+            <a href="{{ url_for('broadcast') }}" class="btn btn-primary">Create broadcast</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

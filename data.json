@@ -1,0 +1,272 @@
+{
+  "patients": [
+    {
+      "name": "Abhang Sawant",
+      "phone": "09326120220",
+      "email": "abhangvsawant@gmail.com",
+      "age": "20",
+      "gender": "Male",
+      "treatment": "",
+      "notes": "",
+      "stage": "Missed Appointment",
+      "followup_date": "",
+      "id": "9476b737",
+      "created_at": "2026-04-23T10:53:54.580646",
+      "history": [
+        {
+          "note": "Missed appointment on 2026-04-29",
+          "date": "23 Apr 2026",
+          "by": "System"
+        }
+      ],
+      "source": "Walk-in",
+      "owner": "Priya (Staff)",
+      "priority": "Warm",
+      "communication_preference": "WhatsApp",
+      "next_action": "",
+      "estimated_value": "0",
+      "amount_collected": "0",
+      "payment_status": "Not quoted",
+      "last_contacted_at": "",
+      "tags": [],
+      "risk_flags": [],
+      "treatment_plans": [],
+      "consent": {
+        "whatsapp": true,
+        "sms": false,
+        "email": false,
+        "marketing": true
+      }
+    },
+    {
+      "name": "shubam",
+      "phone": "1234567890",
+      "email": "shubam@gmail.com",
+      "age": "21",
+      "gender": "Male",
+      "treatment": "Root Canal",
+      "notes": "",
+      "stage": "Treatment Ongoing",
+      "followup_date": "2026-04-29",
+      "id": "1884e3c7",
+      "created_at": "2026-04-23T11:06:03.192070",
+      "history": [],
+      "source": "Walk-in",
+      "owner": "Priya (Staff)",
+      "priority": "Warm",
+      "communication_preference": "WhatsApp",
+      "next_action": "",
+      "estimated_value": "0",
+      "amount_collected": "0",
+      "payment_status": "Not quoted",
+      "last_contacted_at": "",
+      "tags": [],
+      "risk_flags": [],
+      "treatment_plans": [],
+      "consent": {
+        "whatsapp": true,
+        "sms": false,
+        "email": false,
+        "marketing": true
+      }
+    }
+  ],
+  "appointments": [
+    {
+      "id": "bd19112e",
+      "patient_id": "9476b737",
+      "date": "2026-04-29",
+      "time": "22:30",
+      "treatment": "",
+      "notes": "",
+      "status": "Missed",
+      "created_at": "2026-04-23T10:54:22.868566",
+      "provider": "Dr. Sharma",
+      "room": "Chair 1",
+      "channel": "Front desk"
+    },
+    {
+      "id": "32cadd54",
+      "patient_id": "9476b737",
+      "date": "2026-04-27",
+      "time": "20:10",
+      "treatment": "",
+      "notes": "",
+      "status": "Scheduled",
+      "created_at": "2026-04-23T11:06:45.554846",
+      "provider": "Dr. Sharma",
+      "room": "Chair 1",
+      "channel": "Front desk"
+    }
+  ],
+  "offers": [
+    {
+      "id": "106ed9e8",
+      "title": "Hello",
+      "message": "Free Teeth Clean",
+      "patient_ids": [
+        "9476b737"
+      ],
+      "created_at": "2026-04-23T10:54:53.724916",
+      "created_by": "Dr. Sharma",
+      "status": "Preview Ready",
+      "channel": "WhatsApp",
+      "segment": "Manual selection",
+      "image_path": "",
+      "promotion_id": "",
+      "sent": {}
+    },
+    {
+      "id": "2dc610ca",
+      "title": "Freee",
+      "message": "Freee Teeth cleaning on any removal",
+      "patient_ids": [
+        "9476b737",
+        "1884e3c7"
+      ],
+      "created_at": "2026-04-23T11:07:36.264077",
+      "created_by": "Dr. Sharma",
+      "status": "Preview Ready",
+      "channel": "WhatsApp",
+      "segment": "Manual selection",
+      "image_path": "",
+      "promotion_id": "",
+      "sent": {}
+    }
+  ],
+  "promotions": [
+    {
+      "id": "8474aa66",
+      "title": "Free Dental Checkup",
+      "description": "Intro offer to bring new patients into the clinic.",
+      "message": "Hello {name},\n\nWe are offering a free dental checkup this week. Reply to confirm a convenient slot.\n\n- {clinic}",
+      "cta": "Reply to book a slot",
+      "image_path": "",
+      "active": true,
+      "created_at": "2026-04-24T00:53:12",
+      "created_by": "System"
+    },
+    {
+      "id": "9862495c",
+      "title": "Scaling & Polishing Reminder",
+      "description": "Recall offer for hygiene and prevention.",
+      "message": "Hello {name},\n\nIt has been a while since your last cleaning. We can schedule a scaling & polishing visit.\n\n- {clinic}",
+      "cta": "Book hygiene visit",
+      "image_path": "",
+      "active": true,
+      "created_at": "2026-04-24T00:53:12",
+      "created_by": "System"
+    },
+    {
+      "id": "7e39c384",
+      "title": "Implant Consultation",
+      "description": "High-value consult offer for implant leads.",
+      "message": "Hello {name},\n\nWe can schedule an implant consultation and explain options, timeline, and estimated cost.\n\n- {clinic}",
+      "cta": "Schedule consultation",
+      "image_path": "",
+      "active": true,
+      "created_at": "2026-04-24T00:53:12",
+      "created_by": "System"
+    }
+  ],
+  "aftercare_templates": [
+    {
+      "id": "d449fd24",
+      "procedure": "Tooth Extraction (Removal)",
+      "title": "Extraction aftercare",
+      "subject": "Aftercare - Tooth Extraction",
+      "body": "Hello {name},\n\nAfter your tooth extraction, please follow these instructions:\n1) Bite firmly on the gauze for 30-45 minutes (change if needed).\n2) Do not rinse/spit for the first 24 hours.\n3) Avoid smoking/alcohol for 48-72 hours.\n4) Soft, cool foods today. Avoid hot and spicy foods.\n5) If bleeding continues: place fresh gauze and apply pressure.\n\nPain and swelling:\n- Use ice pack outside the cheek (10 min on / 10 min off) for the first 6-8 hours.\n- Take medicines as prescribed.\n\nStart gentle warm salt-water rinses after 24 hours (3-4 times/day).\n\nCall us immediately if you have uncontrolled bleeding, fever, or increasing swelling.\n\n- {clinic}",
+      "image_path": "",
+      "active": true,
+      "default_channels": [
+        "WhatsApp",
+        "Email"
+      ],
+      "created_at": "2026-04-24T00:53:12",
+      "created_by": "System"
+    },
+    {
+      "id": "0b43c984",
+      "procedure": "Root Canal Treatment (RCT)",
+      "title": "RCT aftercare",
+      "subject": "Aftercare - Root Canal",
+      "body": "Hello {name},\n\nAfter your root canal visit:\n1) Mild pain/sensitivity is normal for 1-3 days.\n2) Avoid chewing on the treated tooth until final crown/filling is done.\n3) Take medicines as prescribed.\n4) Maintain normal brushing and flossing.\n\nIf you notice swelling, severe pain, or the temporary filling breaks, contact us.\n\n- {clinic}",
+      "image_path": "",
+      "active": true,
+      "default_channels": [
+        "WhatsApp",
+        "Email"
+      ],
+      "created_at": "2026-04-24T00:53:12",
+      "created_by": "System"
+    },
+    {
+      "id": "f78d50e5",
+      "procedure": "Scaling & Polishing",
+      "title": "Scaling aftercare",
+      "subject": "Aftercare - Scaling",
+      "body": "Hello {name},\n\nAfter scaling/polishing:\n1) Mild sensitivity for 24-48 hours is common.\n2) Avoid very hot/cold foods if sensitive.\n3) If gums feel sore, warm salt-water rinses can help.\n4) Brush gently and floss daily.\n\nIf bleeding persists beyond 24 hours, contact us.\n\n- {clinic}",
+      "image_path": "",
+      "active": true,
+      "default_channels": [
+        "WhatsApp",
+        "Email"
+      ],
+      "created_at": "2026-04-24T00:53:12",
+      "created_by": "System"
+    },
+    {
+      "id": "b7746855",
+      "procedure": "Dental Filling",
+      "title": "Filling aftercare",
+      "subject": "Aftercare - Filling",
+      "body": "Hello {name},\n\nAfter your filling:\n1) Avoid eating until numbness wears off.\n2) Mild sensitivity can last a few days.\n3) If your bite feels high or painful while chewing, contact us for adjustment.\n\n- {clinic}",
+      "image_path": "",
+      "active": true,
+      "default_channels": [
+        "WhatsApp",
+        "Email"
+      ],
+      "created_at": "2026-04-24T00:53:12",
+      "created_by": "System"
+    }
+  ],
+  "aftercare_sends": [],
+  "tasks": [],
+  "activities": [],
+  "settings": {
+    "clinic_name": "DentaCare",
+    "currency": "INR",
+    "default_owner": "Priya (Staff)"
+  },
+  "accounts": [
+    {
+      "id": "8745812d-227f-44ba-b5d6-3f62522a937a",
+      "email": "abhangvsawant@gmail.com",
+      "name": "Abhang Sawant",
+      "role": "admin",
+      "password_hash": "scrypt:32768:8:1$WxUF9VnB5AxX7XLi$9a2bbdc743e3aebb1c3224b4b4bde42ffe85b9a3a183e9b94eef6df36fbcbe0a775cc18f7380f26e23b0d93fea8b847f3f35ed9aa3b9f4dae0fe9d891839670c",
+      "created_at": "2026-04-29T01:15:40",
+      "trial_starts_at": "2026-04-29T01:15:40",
+      "trial_ends_at": "2026-05-04T01:15:40",
+      "is_paid": false,
+      "last_login_at": "2026-04-29T15:22:14",
+      "reset_token_hash": "",
+      "reset_token_expires_at": ""
+    },
+    {
+      "id": "20e73a19-5e0b-493c-a33b-42ebe4b91caf",
+      "email": "shubam@10.com",
+      "name": "Shubam",
+      "role": "admin",
+      "password_hash": "scrypt:32768:8:1$N2mjIJogf90LKQNo$381c1bb98bc7b1f73ea782460c2536f1a9c5a8dddd3f1336cd25fd0118cf37513f1a961cfa178058a2a901db59422fc5c105939894db25fea66a7d7102db1ca2",
+      "created_at": "2026-04-29T01:33:15",
+      "trial_starts_at": "2026-04-29T01:33:15",
+      "trial_ends_at": "2026-05-04T01:33:15",
+      "is_paid": false,
+      "last_login_at": "2026-04-29T01:33:15",
+      "reset_token_hash": "",
+      "reset_token_expires_at": ""
+    }
+  ]
+}

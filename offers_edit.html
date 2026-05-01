@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Offer - DentaCare CRM{% endblock %}
+{% block page_eyebrow %}Offer library{% endblock %}
+{% block page_title %}Edit offer{% endblock %}
+{% block page_subtitle %}Update your offer template, message variables, and image used in broadcasts.{% endblock %}
+
+{% block header_actions %}
+<div class="quick-actions">
+    <a href="{{ url_for('offers') }}" class="btn btn-outline">Back to offers</a>
+    <a href="{{ url_for('broadcast') }}" class="btn btn-primary">Create broadcast</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="grid-side">
+    <article class="form-shell">
+        <div class="form-shell-header">
+            <h2>Offer template</h2>
+            <p>Templates support variables like <code>{name}</code> and <code>{clinic}</code>.</p>
+        </div>
+        <div class="form-shell-body">
+            <form method="POST" action="{{ url_for('offers_edit', promo_id=promo.id) }}" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label for="title" class="form-label">Title</label>
+                        <input id="title" name="title" class="form-control" type="text" value="{{ promo.title }}" required>
+                    </div>
+                    <div class="form-group full">
+                        <label for="description" class="form-label">Description</label>
+                        <input id="description" name="description" class="form-control" type="text" value="{{ promo.description }}">
+                    </div>
+                    <div class="form-group full">
+                        <label for="message" class="form-label">Message template</label>
+                        <textarea id="message" name="message" class="form-control" required>{{ promo.message }}</textarea>
+                        <p class="helper-text">Variables supported: <code>{name}</code>, <code>{clinic}</code>, <code>{phone}</code>.</p>
+                    </div>
+                    <div class="form-group full">
+                        <label for="cta" class="form-label">CTA</label>
+                        <input id="cta" name="cta" class="form-control" type="text" value="{{ promo.cta }}">
+                    </div>
+                    <div class="form-group full">
+                        <label for="image" class="form-label">Replace image (optional)</label>
+                        <input id="image" name="image" class="form-control" type="file" accept="image/png, image/jpeg, image/webp">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">Status</label>
+                        <label class="toggle-row">
+                            <input type="checkbox" name="active" {% if promo.active %}checked{% endif %}>
+                            <span>Active</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <a href="{{ url_for('offers') }}" class="btn btn-outline">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </article>
+
+    <aside class="section-stack">
+        <article class="card">
+            <div class="card-header">
+                <h2 class="card-title">Current image</h2>
+            </div>
+            <div class="card-body">
+                {% if promo.image_path %}
+                    <div class="image-frame">
+                        <img src="{{ url_for('static', filename=promo.image_path) }}" alt="Offer image">
+                    </div>
+                {% else %}
+                    <p class="text-muted">No image uploaded.</p>
+                {% endif %}
+            </div>
+        </article>
+    </aside>
+</section>
+{% endblock %}
+
