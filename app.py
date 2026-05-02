@@ -8,6 +8,7 @@ import secrets
 import smtplib
 import tempfile
 import uuid
+import hashlib
 from collections import Counter
 from datetime import date, datetime, timedelta
 from functools import wraps
@@ -69,8 +70,8 @@ TRIAL_DAYS = int(os.environ.get("TRIAL_DAYS", "5"))
 RESET_TOKEN_TTL_MINUTES = int(os.environ.get("RESET_TOKEN_TTL_MINUTES", "30"))
 UPGRADE_ACCESS_CODE = os.environ.get("UPGRADE_ACCESS_CODE", "").strip()
 
-RAZORPAY_KEY_ID = os.environ.get("rzp_test_8x2dSIE00WGDPx", "").strip()
-RAZORPAY_KEY_SECRET = os.environ.get("***********************", "").strip()
+RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID", "").strip()
+RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET", "").strip()
 RAZORPAY_WEBHOOK_SECRET = os.environ.get("RAZORPAY_WEBHOOK_SECRET", "").strip()
 
 PATIENT_STAGES = [
@@ -646,11 +647,9 @@ def get_user_data_file():
         email = (current_user() or {}).get("email", "")
         if not email:
                     return DATA_FILE
-                import hashlib
     email_hash = hashlib.md5(email.lower().encode()).hexdigest()[:12]
     fname = f"data_{email_hash}.json"
     return os.path.join(app.root_path, fname)
-def load_data():
     if not os.path.exists(get_user_data_file()):
         data = empty_data()
         save_data(data)
