@@ -70,7 +70,7 @@ RESET_TOKEN_TTL_MINUTES = int(os.environ.get("RESET_TOKEN_TTL_MINUTES", "30"))
 UPGRADE_ACCESS_CODE = os.environ.get("UPGRADE_ACCESS_CODE", "").strip()
 
 RAZORPAY_KEY_ID = os.environ.get("rzp_test_8x2dSIE00WGDPx", "").strip()
-RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET", "").strip()
+RAZORPAY_KEY_SECRET = os.environ.get("***********************", "").strip()
 RAZORPAY_WEBHOOK_SECRET = os.environ.get("RAZORPAY_WEBHOOK_SECRET", "").strip()
 
 PATIENT_STAGES = [
