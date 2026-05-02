@@ -30,7 +30,7 @@
 
                 <div class="login-copy" style="margin-top:2.1rem;">
                     <h1>Choose your plan.<br>Unlock Pro access.</h1>
-                    <p>Pick a billing cycle that fits your clinic. Payments are handled securely on Stripe.</p>
+                    <p>Pick a billing cycle that fits your clinic. Payments are handled securely on Razorpay</p>
 
                     <div class="login-points">
                         {% for feature in (catalog or {}).get("features", []) %}
@@ -98,9 +98,9 @@
                             {{ plan.cta }}
                         </a>
 
-                        {% if not plan.stripe_link %}
+                        {% if not amount_paise %}
                             <div class="login-footer-note" style="margin-top:.75rem;">
-                                Admin: set the Stripe Payment Link env var for this plan to enable payments.
+                                Admin: set the Razorpay Payment Link env var for this plan to enable payments.
                             </div>
                         {% endif %}
                     </div>
@@ -115,7 +115,7 @@
 
                 <div class="auth-note" style="margin-top:1rem;">
                     <p style="margin:0; color:var(--color-text-muted); font-size:var(--text-sm);">
-                        Payment redirect uses Stripe Payment Links. After you configure Stripe + webhooks, we can auto-activate Pro immediately after payment.
+                        Payment redirect uses Razorpay Payment Links. After you configure Razorpay + webhooks, we can auto-activate Pro immediately after payment.
                     </p>
                 </div>
             </div>
