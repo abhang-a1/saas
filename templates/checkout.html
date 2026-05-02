@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto p-4">
+  <h1 class="text-xl font-bold mb-4">Complete Payment</h1>
+  <div class="bg-white rounded-xl shadow p-6 mb-4">
+    <p class="text-gray-600 mb-2">Plan: <strong>{{ plan.name }}</strong></p>
+    <p class="text-gray-600 mb-4">Amount: <strong>&#8377;{{ plan.price }}</strong> {{ plan.period }}</p>
+    <button id="rzp-button" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-lg">Pay &#8377;{{ plan.price }}</button>
+  </div>
+  <form id="rzp-form" action="/payment/verify" method="POST">
+    <input type="hidden" name="razorpay_payment_id" id="rzp_payment_id">
+    <input type="hidden" name="razorpay_order_id" id="rzp_order_id">
+    <input type="hidden" name="razorpay_signature" id="rzp_signature">
+    <input type="hidden" name="plan_id" value="{{ plan.id }}">
+  </form>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  var options = {
+    key: "{{ key_id }}",
+    amount: {{ order.amount }},
+    currency: "INR",
+    name: "DentaCare CRM",
+    description: "{{ plan.name }} Plan",
+    order_id: "{{ order.id }}",
+    handler: function(response) {
+      document.getElementById('rzp_payment_id').value = response.razorpay_payment_id;
+      document.getElementById('rzp_order_id').value = response.razorpay_order_id;
+      document.getElementById('rzp_signature').value = response.razorpay_signature;
+      document.getElementById('rzp-form').submit();
+    },
+    prefill: {
+      name: "{{ user.name if user else '' }}",
+      email: "{{ user.email if user else '' }}"
+    },
+    theme: { color: '#2563eb' }
+  };
+  var rzp = new Razorpay(options);
+  document.getElementById('rzp-button').onclick = function(e) {
+    rzp.open();
+    e.preventDefault();
+  };
+</script>
+{% endblock %}
