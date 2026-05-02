@@ -2405,3 +2405,95 @@ textarea.form-control {
         scroll-behavior: auto !important;
     }
 }
+
+
+/* =============================================
+   MOBILE OPTIMIZATION - SIMPLE UI
+   Bottom navigation + touch-friendly targets
+   ============================================= */
+
+/* Bottom mobile navigation bar */
+.mobile-bottom-nav {
+     display: none;
+     position: fixed;
+     bottom: 0;
+     left: 0;
+     right: 0;
+     background: var(--color-panel);
+     z-index: 200;
+     padding: 0.5rem 0 env(safe-area-inset-bottom, 0.5rem);
+     border-top: 1px solid rgba(255,255,255,0.08);
+   }
+
+.mobile-bottom-nav-inner {
+     display: flex;
+     justify-content: space-around;
+     align-items: center;
+   }
+
+.mobile-nav-item {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     padding: 0.5rem 1rem;
+     color: var(--color-text-faint);
+     font-size: 0.7rem;
+     text-decoration: none;
+     min-width: 44px;
+     min-height: 44px;
+   }
+
+.mobile-nav-item.active,
+.mobile-nav-item:hover {
+     color: var(--color-primary);
+   }
+
+.mobile-nav-item svg {
+     width: 1.4rem;
+     height: 1.4rem;
+     margin-bottom: 0.15rem;
+   }
+
+@media (max-width: 960px) {
+     .mobile-bottom-nav { display: block; }
+
+  /* Add bottom padding so content isn't hidden behind nav */
+  .app-main {
+         padding-bottom: 5rem;
+       }
+
+  /* Larger tap targets for cards and buttons */
+  .btn, button, a.btn {
+         min-height: 44px;
+         padding: 0.6rem 1rem;
+       }
+
+  /* Full-width cards on mobile */
+  .card, .stat-card, .patient-card {
+         width: 100%;
+       }
+
+  /* Simplify topbar on mobile */
+  .topbar-actions { gap: 0.5rem; }
+
+  /* Hide sidebar badge text on mobile to save space */
+  .stat-label { font-size: 0.75rem; }
+   }
+
+@media (max-width: 480px) {
+     /* Compact tables on small phones */
+  table { font-size: 0.82rem; }
+
+  /* Stack form actions vertically */
+  .page-actions {
+         flex-direction: column;
+         gap: 0.5rem;
+       }
+
+  /* Full width input fields */
+  .form-group input,
+     .form-group select,
+     .form-group textarea {
+            font-size: 16px; /* Prevent iOS zoom on focus */
+     }
+   }
