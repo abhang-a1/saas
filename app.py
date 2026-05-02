@@ -69,9 +69,9 @@ TRIAL_DAYS = int(os.environ.get("TRIAL_DAYS", "5"))
 RESET_TOKEN_TTL_MINUTES = int(os.environ.get("RESET_TOKEN_TTL_MINUTES", "30"))
 UPGRADE_ACCESS_CODE = os.environ.get("UPGRADE_ACCESS_CODE", "").strip()
 
-STRIPE_MONTHLY_LINK = os.environ.get("STRIPE_MONTHLY_LINK", "").strip()
-STRIPE_QUARTERLY_LINK = os.environ.get("STRIPE_QUARTERLY_LINK", "").strip()
-STRIPE_YEARLY_LINK = os.environ.get("STRIPE_YEARLY_LINK", "").strip()
+RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID", "").strip()
+RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET", "").strip()
+RAZORPAY_WEBHOOK_SECRET = os.environ.get("RAZORPAY_WEBHOOK_SECRET", "").strip()
 
 PATIENT_STAGES = [
     "New Inquiry",
@@ -331,7 +331,7 @@ def plan_catalog():
                 "price": monthly,
                 "period": "per month",
                 "cta": "Pay monthly",
-                "stripe_link": STRIPE_MONTHLY_LINK,
+                "amount_paise": monthly * 100,
                 "highlight": False,
             },
             {
@@ -341,7 +341,7 @@ def plan_catalog():
                 "price": quarterly,
                 "period": "every 3 months",
                 "cta": "Pay quarterly",
-                "stripe_link": STRIPE_QUARTERLY_LINK,
+                "amount_paise": quarterly * 100,
                 "highlight": True,
                 "badge": "Most popular",
             },
@@ -352,7 +352,7 @@ def plan_catalog():
                 "price": yearly,
                 "period": "per year",
                 "cta": "Pay yearly",
-                "stripe_link": STRIPE_YEARLY_LINK,
+                "amount_paise": yearly * 100,
                 "highlight": False,
                 "badge": "Best price",
             },
@@ -642,14 +642,22 @@ def migrate_data(data):
     return data
 
 
+def get_user_data_file():
+        email = (current_user() or {}).get("email", "")
+        if not email:
+                    return DATA_FILE
+                import hashlib
+    email_hash = hashlib.md5(email.lower().encode()).hexdigest()[:12]
+    fname = f"data_{email_hash}.json"
+    return os.path.join(app.root_path, fname)
 def load_data():
-    if not os.path.exists(DATA_FILE):
+    if not os.path.exists(get_user_data_file()):
         data = empty_data()
         save_data(data)
         return data
 
     try:
-        with open(DATA_FILE, "r", encoding="utf-8") as file:
+        with open(get_user_data_file(), "r", encoding="utf-8") as file:
             data = json.load(file)
     except (json.JSONDecodeError, OSError):
         data = empty_data()
@@ -700,15 +708,15 @@ def load_data():
 
 
 def save_data(data):
-    os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
+    os.makedirs(os.path.dirname(get_user_data_file()), exist_ok=True)
     migrate_data(data)
 
-    fd, temp_path = tempfile.mkstemp(prefix=".data-", suffix=".json", dir=os.path.dirname(DATA_FILE))
+    fd, temp_path = tempfile.mkstemp(prefix=".data-", suffix=".json", dir=os.path.dirname(get_user_data_file()))
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as file:
             json.dump(data, file, indent=2, ensure_ascii=False)
             file.write("\n")
-        os.replace(temp_path, DATA_FILE)
+        os.replace(temp_path, get_user_data_file())
     finally:
         if os.path.exists(temp_path):
             os.remove(temp_path)
@@ -1460,21 +1468,53 @@ def checkout(plan_id):
         flash("Invalid plan selected.", "error")
         return redirect(url_for("plans"))
 
-    stripe_link = safe_strip(plan.get("stripe_link"))
-    if not stripe_link:
+    amount_paise = plan.get("amount_paise", 0)
+    if not RAZORPAY_KEY_ID or not RAZORPAY_KEY_SECRET:
         flash(
-            "Payment is not configured yet. Set STRIPE_MONTHLY_LINK / STRIPE_QUARTERLY_LINK / STRIPE_YEARLY_LINK.",
+            "Razorpay is not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET environment variables.",
             "error",
         )
         return redirect(url_for("plans"))
 
     # Attach a reference for downstream attribution (webhook/automation can use this).
-    client_ref = (user or {}).get("id") or ""
-    joiner = "&" if "?" in stripe_link else "?"
-    redirect_url = f"{stripe_link}{joiner}client_reference_id={client_ref}"
-    return redirect(redirect_url)
+    rz_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+    order = rz_client.order.create({"amount": amount_paise, "currency": "INR", "receipt": plan_id, "notes": {"user_id": (user or {}).get("id", ""), "plan": plan_id}})
+    return render_template("checkout.html", order=order, plan=plan, key_id=RAZORPAY_KEY_ID, user=user)
+    # Razorpay payment handled by checkout.html template
 
 
+@app.route("/payment/verify", methods=["POST"])
+@login_required
+def payment_verify():
+        rz_payment_id = safe_strip(request.form.get("razorpay_payment_id"))
+        rz_order_id = safe_strip(request.form.get("razorpay_order_id"))
+        rz_signature = safe_strip(request.form.get("razorpay_signature"))
+        plan_id = safe_strip(request.form.get("plan_id"))
+        if not rz_payment_id or not rz_order_id or not rz_signature:
+                    flash("Payment verification failed.", "error")
+                    return redirect(url_for("plans"))
+                try:
+                            rz_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+                            rz_client.utility.verify_payment_signature({
+                                            "razorpay_order_id": rz_order_id,
+                                            "razorpay_payment_id": rz_payment_id,
+                                            "razorpay_signature": rz_signature,
+                                        })
+                        except Exception:
+                                    flash("Payment verification failed. Contact support.", "error")
+                                    return redirect(url_for("plans"))
+                                data = load_data()
+    user = current_user()
+    email = normalize_email((user or {}).get("email", ""))
+    account = find_account_by_login(data, email)
+    if account:
+                account["is_paid"] = True
+                account["paid_plan"] = plan_id
+                account["paid_at"] = now_iso()
+                save_data(data)
+                session["user"] = session_user_for_account(account)
+            flash("Payment successful! Your account has been upgraded.", "success")
+    return redirect(url_for("dashboard"))
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user():
