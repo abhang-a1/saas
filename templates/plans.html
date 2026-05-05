@@ -3,123 +3,1193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plans - DentaCare CRM</title>
-    <link rel="preconnect" href="https://api.fontshare.com">
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Plans – DentaCare CRM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:           #F7F6F2;
+            --surface:      #FFFFFF;
+            --primary:      #1A6B5A;
+            --primary-h:    #155A4B;
+            --primary-l:    #E8F4F1;
+            --text-pri:     #1A1A2E;
+            --text-sec:     #6B7280;
+            --border:       #E5E7EB;
+            --danger:       #DC2626;
+            --danger-bg:    #FEF2F2;
+            --danger-bd:    #FECACA;
+            --warn:         #D97706;
+            --warn-bg:      #FFFBEB;
+            --success:      #16A34A;
+            --success-bg:   #F0FDF4;
+            --info:         #2563EB;
+            --info-bg:      #EFF6FF;
+            --sidebar-bg:   #1A1A2E;
+            --radius-sm:    8px;
+            --radius-md:    12px;
+            --radius-lg:    16px;
+            --radius-pill:  20px;
+            --shadow-card:  0 1px 4px rgba(0,0,0,0.07);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { transition: none !important; animation: none !important; }
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-pri);
+            background: var(--bg);
+        }
+
+        /* ── Layout ── */
+        .layout { display: flex; min-height: 100vh; }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 220px;
+            background: var(--sidebar-bg);
+            position: fixed;
+            top: 0; left: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            overflow-y: auto;
+        }
+        .sidebar-logo {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 20px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+        .sidebar-logo span { font-size: 22px; }
+        .nav-section-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            color: #475569;
+            text-transform: uppercase;
+            padding: 20px 20px 6px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 40px;
+            padding: 0 20px;
+            color: #94A3B8;
+            font-size: 14px;
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+            position: relative;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #CBD5E1; }
+        .nav-item.active {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: var(--primary);
+            border-radius: 0 2px 2px 0;
+        }
+        .nav-icon { width: 18px; height: 18px; flex-shrink: 0; }
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .avatar-circle {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 600; color: #fff;
+            flex-shrink: 0;
+        }
+        .sidebar-user-info { flex: 1; min-width: 0; }
+        .sidebar-user-name { font-size: 13px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-user-role { font-size: 11px; color: #64748B; }
+        .sidebar-logout { font-size: 12px; color: #64748B; text-decoration: none; display: block; margin-top: 2px; }
+        .sidebar-logout:hover { color: var(--danger); }
+
+        /* ── Main wrapper ── */
+        .main-wrap {
+            margin-left: 220px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            height: 56px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            flex-shrink: 0;
+        }
+        .topbar-title { font-size: 16px; font-weight: 600; color: var(--text-pri); }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .bell-btn {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-sec);
+            position: relative;
+            transition: background 0.15s;
+        }
+        .bell-btn:hover { background: var(--bg); }
+        .bell-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--danger);
+            position: absolute;
+            top: 6px; right: 6px;
+            display: none;
+            border: 1.5px solid #fff;
+        }
+        .bell-dot.visible { display: block; }
+        .sub-badge {
+            padding: 3px 10px;
+            border-radius: var(--radius-pill);
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.15s;
+        }
+        .sub-badge:hover { opacity: 0.85; }
+        .sub-badge.trial { background: #FFFBEB; color: var(--warn); }
+        .sub-badge.paid  { background: var(--primary-l); color: var(--primary); }
+        .sub-badge.expired { background: var(--danger-bg); color: var(--danger); }
+        .topbar-avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 600; color: #fff;
+        }
+
+        /* ── Bell dropdown ── */
+        .bell-dropdown {
+            position: absolute;
+            top: 48px; right: 0;
+            width: 300px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 200;
+            overflow: hidden;
+            display: none;
+        }
+        .bell-dropdown.open { display: block; }
+        .bell-dd-header {
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-sec);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+        .bell-dd-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 16px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+        .bell-dd-item:last-child { border-bottom: none; }
+        .bell-dd-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+        .bell-dd-msg { font-size: 13px; color: var(--text-pri); }
+        .bell-dd-empty { padding: 20px 16px; text-align: center; font-size: 13px; color: var(--text-sec); }
+
+        /* ── Page content ── */
+        .page-content {
+            padding: 28px 24px;
+            flex: 1;
+        }
+
+        /* ── Page header ── */
+        .page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .eyebrow {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .page-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-pri);
+            line-height: 1.3;
+        }
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-sec);
+            margin-top: 6px;
+            max-width: 560px;
+        }
+        .page-header-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+
+        /* ── Upgrade banner ── */
+        .upgrade-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            background: var(--danger-bg);
+            border: 1px solid var(--danger-bd);
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            margin-bottom: 24px;
+        }
+        .upgrade-banner p { font-size: 14px; color: var(--danger); font-weight: 500; }
+        .upgrade-banner a { flex-shrink: 0; }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 36px;
+            padding: 0 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+            white-space: nowrap;
+        }
+        .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--primary-h);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26,107,90,0.25);
+        }
+        .btn-outline {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            color: var(--text-pri);
+        }
+        .btn-outline:hover { background: var(--bg); }
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-sec);
+        }
+        .btn-ghost:hover { background: var(--bg); }
+        .btn-full { width: 100%; height: 44px; font-size: 15px; }
+
+        /* ── Plan shell layout ── */
+        .plan-shell {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+        .card + .card { margin-top: 16px; }
+        .card-header {
+            padding: 20px 20px 0;
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-pri);
+        }
+        .card-kicker {
+            font-size: 13px;
+            color: var(--text-sec);
+            margin-top: 4px;
+        }
+        .card-body { padding: 16px 20px 20px; }
+
+        /* ── Feature list ── */
+        .feature-list { display: flex; flex-direction: column; gap: 10px; }
+        .feature-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .feature-check {
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: var(--primary-l);
+            color: var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .feature-item strong {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-pri);
+        }
+        .feature-item span {
+            font-size: 12px;
+            color: var(--text-sec);
+        }
+
+        /* ── Billing note ── */
+        .billing-note {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 13px;
+            color: var(--text-sec);
+            line-height: 1.5;
+        }
+        .billing-note + .billing-note { margin-top: 10px; }
+        .billing-note.trial-active {
+            background: var(--warn-bg);
+            border-color: #FDE68A;
+            color: #92400E;
+        }
+        .billing-note.trial-expired {
+            background: var(--danger-bg);
+            border-color: var(--danger-bd);
+            color: #991B1B;
+        }
+
+        /* ── Plan grid ── */
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        /* ── Plan card ── */
+        .plan-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        .plan-card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+            transform: translateY(-2px);
+        }
+        .plan-card.highlight {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,107,90,0.10);
+        }
+
+        .plan-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .plan-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .plan-name strong {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-pri);
+        }
+        .plan-badge {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            background: var(--primary);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
+        }
+        .plan-sub {
+            font-size: 12px;
+            color: var(--text-sec);
+            margin-top: 3px;
+        }
+        .plan-price {
+            display: flex;
+            align-items: baseline;
+            gap: 1px;
+            justify-content: flex-end;
+        }
+        .plan-currency {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sec);
+            align-self: flex-start;
+            margin-top: 4px;
+        }
+        .plan-amount {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--text-pri);
+            line-height: 1;
+        }
+        .plan-period {
+            font-size: 11px;
+            color: var(--text-sec);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .plan-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 0;
+        }
+
+        .plan-perks {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .plan-perk {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            color: var(--text-sec);
+        }
+        .plan-perk-check {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--primary-l);
+            color: var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 8px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .plan-admin-note {
+            font-size: 11px;
+            color: var(--warn);
+            background: var(--warn-bg);
+            border-radius: var(--radius-sm);
+            padding: 8px 10px;
+        }
+
+        /* ── FAQ / Assurance strip ── */
+        .assurance-strip {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 8px;
+        }
+        .assurance-item {
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
+            padding: 18px 20px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .assurance-icon {
+            font-size: 22px;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .assurance-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-pri);
+        }
+        .assurance-desc {
+            font-size: 12px;
+            color: var(--text-sec);
+            margin-top: 2px;
+        }
+
+        /* ── Toast ── */
+        .toast-stack {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast {
+            width: 320px;
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            pointer-events: all;
+            position: relative;
+            animation: toastIn 0.25s ease forwards;
+        }
+        .toast.removing { animation: toastOut 0.2s ease forwards; }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateX(0); }
+            to   { opacity: 0; transform: translateX(40px); }
+        }
+        .toast-bar {
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            border-radius: 12px 0 0 12px;
+        }
+        .toast.success .toast-bar { background: var(--success); }
+        .toast.error   .toast-bar { background: var(--danger); }
+        .toast.warning .toast-bar { background: var(--warn); }
+        .toast.info    .toast-bar { background: var(--info); }
+        .toast-msg { font-size: 13px; color: var(--text-pri); flex: 1; padding-left: 4px; }
+        .toast-close {
+            background: none; border: none; cursor: pointer;
+            color: var(--text-sec); font-size: 16px; line-height: 1;
+            padding: 0; flex-shrink: 0;
+        }
+        .toast-close:hover { color: var(--text-pri); }
+
+        /* ── Animations ── */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(12px);
+            animation: fadeUp 0.28s ease-out forwards;
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Mobile bottom nav ── */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 64px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            z-index: 100;
+        }
+        .bottom-nav-inner {
+            display: flex;
+            height: 100%;
+        }
+        .bottom-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            text-decoration: none;
+            color: var(--text-sec);
+            font-size: 10px;
+            font-weight: 500;
+            min-width: 44px;
+            min-height: 44px;
+            transition: color 0.15s;
+            position: relative;
+        }
+        .bottom-nav-item.active { color: var(--primary); }
+        .bottom-nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+        .bottom-nav-icon { width: 22px; height: 22px; }
+
+        /* ── More drawer ── */
+        .more-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(2px);
+            z-index: 200;
+        }
+        .more-overlay.open { display: block; }
+        .more-drawer {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--surface);
+            border-radius: 20px 20px 0 0;
+            padding: 20px 16px 32px;
+            z-index: 201;
+            transform: translateY(100%);
+            transition: transform 0.25s ease;
+        }
+        .more-overlay.open .more-drawer { transform: translateY(0); }
+        .more-drawer-handle {
+            width: 40px; height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+        .more-drawer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .more-drawer-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--text-sec);
+            font-size: 11px;
+            font-weight: 500;
+            padding: 12px 4px;
+            border-radius: var(--radius-sm);
+            transition: background 0.15s;
+        }
+        .more-drawer-item:hover { background: var(--bg); }
+        .more-drawer-item svg { width: 22px; height: 22px; }
+
+        /* ── FAB ── */
+        .fab {
+            display: none;
+            position: fixed;
+            bottom: 84px;
+            right: 20px;
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(26,107,90,0.35);
+            z-index: 150;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .fab:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(26,107,90,0.4); }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-wrap { margin-left: 0; padding-bottom: 64px; }
+            .bottom-nav { display: flex; }
+            .fab { display: flex; }
+
+            .page-content { padding: 20px 16px; }
+
+            .page-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .page-header-actions {
+                flex-wrap: wrap;
+            }
+
+            .plan-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .plan-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .assurance-strip {
+                grid-template-columns: 1fr;
+            }
+
+            .toast-stack { right: 12px; left: 12px; }
+            .toast { width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            .plan-top { flex-direction: column; gap: 8px; }
+            .plan-price { justify-content: flex-start; }
+            .plan-period { text-align: left; }
+        }
+    </style>
 </head>
 <body>
-    <main class="page-main" style="max-width: 1240px; margin: 0 auto;">
-        <section class="page-header" style="margin-bottom: 1.5rem;">
-            <div>
-                <div class="eyebrow">Billing and subscription</div>
-                <h1 style="font-size: var(--text-xl);">Choose the plan that fits your clinic</h1>
-                <p class="page-subtitle">Unlock the full DentaCare operating system with secure Razorpay checkout, flexible billing cycles, and a setup designed for Indian dental clinics.</p>
-            </div>
-            <div class="quick-actions">
-                <a href="{{ url_for('logout') }}" class="btn btn-outline">Sign out</a>
-                <a href="{{ url_for('forgot_password') }}" class="btn btn-ghost">Forgot password?</a>
-            </div>
-        </section>
+<div class="layout">
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            <div class="flash-stack">
-                {% for category, message in messages %}
-                <div class="flash flash-{{ category if category in ['success', 'warning', 'error', 'info'] else 'info' }}">
-                    <span class="flash-dot"></span>
-                    <p>{{ message }}</p>
+    <!-- ── Sidebar ── -->
+    <nav class="sidebar" aria-label="Main navigation">
+        <div class="sidebar-logo">
+            <span>🦷</span> DentaCare
+        </div>
+
+        <div class="nav-section-label">Main</div>
+        <a href="{{ url_for('dashboard') }}" class="nav-item {% if active == 'dashboard' %}active{% endif %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+        </a>
+        <a href="{{ url_for('crm') }}" class="nav-item {% if active == 'crm' %}active{% endif %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v4H3z"/><path d="M3 10h12v4H3z"/><path d="M3 17h7v4H3z"/></svg>
+            CRM
+        </a>
+        <a href="{{ url_for('patients') }}" class="nav-item {% if active == 'patients' %}active{% endif %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Patients
+        </a>
+        <a href="{{ url_for('appointments') }}" class="nav-item {% if active == 'appointments' %}active{% endif %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Appointments
+        </a>
+
+        <div class="nav-section-label">Workflow</div>
+        <a href="{{ url_for('tasks') }}" class="nav-item {% if active == 'tasks' %}active{% endif %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Tasks
+        </a>
+        <a href="{{ url_for('followups') }}" class="nav-item {% if active == 'followups' %}active{% endif %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92V19a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 3 4.18 2 2 0 0 1 5 2h2.09a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Follow-ups
+        </a>
+        <a href="{{ url_for('broadcast') }}" class="nav-item {% if active == 'broadcast' %}active{% endif %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+            Broadcast
+        </a>
+        <a href="{{ url_for('offers') }}" class="nav-item {% if active == 'offers' %}active{% endif %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            Offers
+        </a>
+        <a href="{{ url_for('aftercare') }}" class="nav-item {% if active == 'aftercare' %}active{% endif %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Aftercare
+        </a>
+
+        {% if user.role == 'admin' %}
+        <div class="nav-section-label">Admin</div>
+        <a href="{{ url_for('audit') }}" class="nav-item {% if active == 'audit' %}active{% endif %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Audit Trail
+        </a>
+        <a href="{{ url_for('plans') }}" class="nav-item active">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Plans
+        </a>
+        {% endif %}
+
+        <div class="sidebar-footer">
+            <div class="avatar-circle" id="sidebarAvatar" style="background: #1A6B5A;">
+                {{ user.name[:2].upper() }}
+            </div>
+            <div class="sidebar-user-info">
+                <div class="sidebar-user-name">{{ user.name }}</div>
+                <div class="sidebar-user-role">{{ user.role|capitalize }}</div>
+                <a href="{{ url_for('logout') }}" class="sidebar-logout">Sign out</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ── Main wrap ── -->
+    <div class="main-wrap">
+
+        <!-- ── Topbar ── -->
+        <header class="topbar">
+            <span class="topbar-title">Plans &amp; Billing</span>
+            <div class="topbar-right">
+                <div style="position:relative;">
+                    <button class="bell-btn" id="bellBtn" aria-label="Reminders">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        <span class="bell-dot" id="bellDot"></span>
+                    </button>
+                    <div class="bell-dropdown" id="bellDropdown">
+                        <div class="bell-dd-header">Reminders</div>
+                        <div id="bellList"><div class="bell-dd-empty">Loading…</div></div>
+                    </div>
                 </div>
-                {% endfor %}
+
+                {% if subscription.status == 'trial' %}
+                <a href="{{ url_for('plans') }}" class="sub-badge trial">{{ subscription.days_left }} days left</a>
+                {% elif subscription.status == 'paid' %}
+                <span class="sub-badge paid">Pro</span>
+                {% elif subscription.status == 'expired' %}
+                <a href="{{ url_for('upgrade') }}" class="sub-badge expired">Expired</a>
+                {% endif %}
+
+                <div class="topbar-avatar" id="topbarAvatar" style="background:#1A6B5A;">
+                    {{ user.name[:2].upper() }}
+                </div>
+            </div>
+        </header>
+
+        <!-- ── Page content ── -->
+        <main class="page-content">
+
+            {% if subscription.status == 'expired' %}
+            <div class="upgrade-banner fade-up">
+                <p>⚠️ Your trial has expired. Upgrade now to restore full clinic access.</p>
+                <a href="{{ url_for('upgrade') }}" class="btn btn-primary">Upgrade now →</a>
             </div>
             {% endif %}
-        {% endwith %}
 
-        <section class="plan-shell">
-            <div class="section-stack">
-                <article class="card">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">What is included in Pro</div>
+            <!-- Page header -->
+            <div class="page-header fade-up">
+                <div>
+                    <div class="eyebrow">Billing &amp; Subscription</div>
+                    <h1 class="page-title">Choose the plan that fits your clinic</h1>
+                    <p class="page-subtitle">Unlock the full DentaCare operating system with secure Razorpay checkout, flexible billing cycles, and a setup designed for Indian dental clinics.</p>
+                </div>
+                <div class="page-header-actions">
+                    <a href="{{ url_for('forgot_password') }}" class="btn btn-ghost">Forgot password?</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline">Sign out</a>
+                </div>
+            </div>
+
+            <!-- Plan shell -->
+            <div class="plan-shell">
+
+                <!-- Left column: Features + Billing assurance -->
+                <div>
+                    <!-- What's included -->
+                    <div class="card fade-up" style="animation-delay:0.05s;">
+                        <div class="card-header">
+                            <div class="card-title">What's included in Pro</div>
                             <p class="card-kicker">Everything needed to run patient acquisition, appointments, retention, and clinic operations from one product.</p>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="feature-list">
-                            {% for feature in (catalog or {}).get("features", []) %}
-                            <div class="feature-item">
-                                <div class="feature-item-mark">✓</div>
-                                <div>
-                                    <strong>{{ feature }}</strong>
-                                    <span>Included in Pro access.</span>
+                        <div class="card-body">
+                            <div class="feature-list">
+                                {% for feature in (catalog or {}).get("features", []) %}
+                                <div class="feature-item">
+                                    <div class="feature-check">✓</div>
+                                    <div>
+                                        <strong>{{ feature }}</strong>
+                                        <span>Included in Pro access.</span>
+                                    </div>
                                 </div>
+                                {% endfor %}
                             </div>
-                            {% endfor %}
                         </div>
                     </div>
-                </article>
 
-                <article class="card">
-                    <div class="card-header">
-                        <div>
+                    <!-- Billing assurance -->
+                    <div class="card fade-up" style="animation-delay:0.10s; margin-top:16px;">
+                        <div class="card-header">
                             <div class="card-title">Billing assurance</div>
                             <p class="card-kicker">Clear upgrade path with no confusion for clinic owners and staff.</p>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="billing-note">
-                            {% if (status or {}).get("status") == "trial" %}
-                            Trial active. Upgrade now to keep your clinic live without interruption when the trial ends.
+                        <div class="card-body">
+                            {% if (status or {}).get("status") == "trial" or subscription.status == "trial" %}
+                            <div class="billing-note trial-active">
+                                Trial active — upgrade now to keep your clinic live without interruption when the trial ends.
+                            </div>
                             {% else %}
-                            Trial ended. Upgrade to restore full CRM access and continue using patient, appointment, and retention workflows.
+                            <div class="billing-note trial-expired">
+                                Trial ended — upgrade to restore full CRM access and continue using patient, appointment, and retention workflows.
+                            </div>
                             {% endif %}
-                        </div>
-                        <div class="billing-note" style="margin-top: 0.75rem;">
-                            Payments are processed securely using Razorpay Payment Links. After webhook setup, Pro can be activated automatically after payment confirmation.
+                            <div class="billing-note" style="margin-top:10px;">
+                                Payments are processed securely via Razorpay Payment Links. Pro access is activated automatically after payment confirmation via webhook.
+                            </div>
                         </div>
                     </div>
-                </article>
-            </div>
+                </div>
 
-            <div class="section-stack">
-                <div class="plan-grid">
-                    {% for plan in (catalog or {}).get("plans", []) %}
-                    <article class="plan-card {% if plan.badge %}highlight{% endif %}">
-                        <div class="plan-top">
-                            <div>
-                                <div class="plan-name">
-                                    <strong>{{ plan.name }}</strong>
-                                    {% if plan.badge %}
-                                    <span class="plan-badge">{{ plan.badge }}</span>
-                                    {% endif %}
+                <!-- Right column: Plan cards + assurance strip -->
+                <div>
+                    <div class="plan-grid">
+                        {% for plan in (catalog or {}).get("plans", []) %}
+                        <article class="plan-card {% if plan.badge %}highlight{% endif %} fade-up" style="animation-delay:{{ 0.10 + loop.index0 * 0.05 }}s;">
+                            <div class="plan-top">
+                                <div>
+                                    <div class="plan-name">
+                                        <strong>{{ plan.name }}</strong>
+                                        {% if plan.badge %}
+                                        <span class="plan-badge">{{ plan.badge }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="plan-sub">{{ plan.label }}</div>
                                 </div>
-                                <div class="plan-sub">{{ plan.label }}</div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div class="plan-price">
-                                    <span class="plan-currency">{{ (catalog or {}).get("currency_symbol", "₹") }}</span>
-                                    <span class="plan-amount">{{ plan.price }}</span>
+                                <div>
+                                    <div class="plan-price">
+                                        <span class="plan-currency">{{ (catalog or {}).get("currency_symbol", "₹") }}</span>
+                                        <span class="plan-amount">{{ plan.price }}</span>
+                                    </div>
+                                    <div class="plan-period">{{ plan.period }}</div>
                                 </div>
-                                <div class="plan-period">{{ plan.period }}</div>
                             </div>
-                        </div>
 
-                        <div class="plan-actions">
-                            <a href="{{ url_for('checkout', plan_id=plan.id) }}" class="btn btn-primary" style="width: 100%;">
+                            <hr class="plan-divider">
+
+                            <div class="plan-perks">
+                                <div class="plan-perk"><span class="plan-perk-check">✓</span> Unlimited patients</div>
+                                <div class="plan-perk"><span class="plan-perk-check">✓</span> All workflow modules</div>
+                                <div class="plan-perk"><span class="plan-perk-check">✓</span> WhatsApp &amp; broadcast</div>
+                                <div class="plan-perk"><span class="plan-perk-check">✓</span> Analytics &amp; audit trail</div>
+                            </div>
+
+                            <a href="{{ url_for('checkout', plan_id=plan.id) }}" class="btn btn-primary btn-full">
                                 {{ plan.cta }}
                             </a>
-                        </div>
 
-                        {% if not plan.amount_paise and not amount_paise %}
-                        <p class="page-subtitle" style="margin-top: 0.75rem;">
-                            Admin: set the Razorpay Payment Link env var for this plan to enable payments.
-                        </p>
-                        {% endif %}
-                    </article>
-                    {% endfor %}
+                            {% if not plan.get('amount_paise') %}
+                            <div class="plan-admin-note">
+                                Admin: set the Razorpay Payment Link env var for this plan to enable payments.
+                            </div>
+                            {% endif %}
+                        </article>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Assurance strip -->
+                    <div class="assurance-strip">
+                        <div class="assurance-item fade-up" style="animation-delay:0.25s;">
+                            <div class="assurance-icon">🔒</div>
+                            <div>
+                                <div class="assurance-title">Secure Razorpay checkout</div>
+                                <div class="assurance-desc">PCI-DSS compliant. UPI, cards, net banking — all accepted.</div>
+                            </div>
+                        </div>
+                        <div class="assurance-item fade-up" style="animation-delay:0.30s;">
+                            <div class="assurance-icon">⚡</div>
+                            <div>
+                                <div class="assurance-title">Instant activation</div>
+                                <div class="assurance-desc">Pro access is enabled automatically after payment via webhook.</div>
+                            </div>
+                        </div>
+                        <div class="assurance-item fade-up" style="animation-delay:0.35s;">
+                            <div class="assurance-icon">📞</div>
+                            <div>
+                                <div class="assurance-title">Clinic-first support</div>
+                                <div class="assurance-desc">Built exclusively for Indian dental practices with local billing.</div>
+                            </div>
+                        </div>
+                        <div class="assurance-item fade-up" style="animation-delay:0.40s;">
+                            <div class="assurance-icon">🔄</div>
+                            <div>
+                                <div class="assurance-title">No data loss on upgrade</div>
+                                <div class="assurance-desc">All patients, tasks, and appointments carry over seamlessly.</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
-        </section>
-    </main>
+        </main>
+    </div>
+</div>
+
+<!-- ── Mobile bottom nav ── -->
+<nav class="bottom-nav" aria-label="Mobile navigation">
+    <div class="bottom-nav-inner">
+        <a href="{{ url_for('dashboard') }}" class="bottom-nav-item {% if active == 'dashboard' %}active{% endif %}">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Home
+        </a>
+        <a href="{{ url_for('patients') }}" class="bottom-nav-item {% if active == 'patients' %}active{% endif %}">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Patients
+        </a>
+        <a href="{{ url_for('appointments') }}" class="bottom-nav-item {% if active == 'appointments' %}active{% endif %}">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Schedule
+        </a>
+        <a href="{{ url_for('tasks') }}" class="bottom-nav-item {% if active == 'tasks' %}active{% endif %}">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Tasks
+        </a>
+        <button class="bottom-nav-item" id="moreBtn">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+            More
+        </button>
+    </div>
+</nav>
+
+<!-- More drawer -->
+<div class="more-overlay" id="moreOverlay">
+    <div class="more-drawer" id="moreDrawer">
+        <div class="more-drawer-handle"></div>
+        <div class="more-drawer-grid">
+            <a href="{{ url_for('crm') }}" class="more-drawer-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v4H3z"/><path d="M3 10h12v4H3z"/><path d="M3 17h7v4H3z"/></svg>
+                CRM
+            </a>
+            <a href="{{ url_for('followups') }}" class="more-drawer-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92V19a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 3 4.18 2 2 0 0 1 5 2h2.09a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                Follow-ups
+            </a>
+            <a href="{{ url_for('broadcast') }}" class="more-drawer-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+                Broadcast
+            </a>
+            <a href="{{ url_for('offers') }}" class="more-drawer-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                Offers
+            </a>
+            <a href="{{ url_for('aftercare') }}" class="more-drawer-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                Aftercare
+            </a>
+            {% if user.role == 'admin' %}
+            <a href="{{ url_for('audit') }}" class="more-drawer-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Audit
+            </a>
+            <a href="{{ url_for('plans') }}" class="more-drawer-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Plans
+            </a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="more-drawer-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sign out
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" aria-label="Upgrade plan" onclick="window.location.href='{{ url_for('plans') }}'">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+</button>
+
+<!-- Toast container -->
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<script>
+    /* ── Avatar color ── */
+    (function() {
+        const palettes = ['#1A6B5A','#2563EB','#7C3AED','#D97706','#DC2626','#0369A1','#15803D','#C2410C'];
+        function avatarColor(name) {
+            let h = 0;
+            for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+            return palettes[Math.abs(h) % palettes.length];
+        }
+        const name = {{ user.name | tojson }};
+        const color = avatarColor(name);
+        document.querySelectorAll('#sidebarAvatar, #topbarAvatar').forEach(el => el.style.background = color);
+    })();
+
+    /* ── Toast system ── */
+    function showToast(msg, type) {
+        const stack = document.getElementById('toastStack');
+        const t = document.createElement('div');
+        t.className = 'toast ' + (type || 'info');
+        t.innerHTML = '<div class="toast-bar"></div><span class="toast-msg">' + msg + '</span><button class="toast-close" aria-label="Close">×</button>';
+        stack.appendChild(t);
+        t.querySelector('.toast-close').addEventListener('click', () => removeToast(t));
+        setTimeout(() => removeToast(t), 3500);
+    }
+    function removeToast(t) {
+        t.classList.add('removing');
+        setTimeout(() => t.remove(), 200);
+    }
+
+    /* ── Flash messages → toasts ── */
+    const flashes = {{ get_flashed_messages(with_categories=True) | tojson }};
+    flashes.forEach(([cat, msg]) => showToast(msg, cat));
+
+    /* ── Bell reminders ── */
+    async function loadReminders() {
+        try {
+            const res = await fetch('/api/reminders');
+            const data = await res.json();
+            const dot = document.getElementById('bellDot');
+            const list = document.getElementById('bellList');
+            if (data && data.length > 0) {
+                dot.classList.add('visible');
+                list.innerHTML = data.map(r =>
+                    '<div class="bell-dd-item">' +
+                    '<span class="bell-dd-dot" style="background:' + (r.color || '#6B7280') + '"></span>' +
+                    '<span class="bell-dd-msg">' + r.msg + '</span>' +
+                    '</div>'
+                ).join('');
+            } else {
+                list.innerHTML = '<div class="bell-dd-empty">You\'re all caught up 🎉</div>';
+            }
+        } catch(e) {
+            document.getElementById('bellList').innerHTML = '<div class="bell-dd-empty">Could not load reminders.</div>';
+        }
+    }
+    loadReminders();
+
+    const bellBtn = document.getElementById('bellBtn');
+    const bellDropdown = document.getElementById('bellDropdown');
+    bellBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        bellDropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', () => bellDropdown.classList.remove('open'));
+    bellDropdown.addEventListener('click', e => e.stopPropagation());
+
+    /* ── More drawer ── */
+    const moreBtn = document.getElementById('moreBtn');
+    const moreOverlay = document.getElementById('moreOverlay');
+    moreBtn.addEventListener('click', () => moreOverlay.classList.add('open'));
+    moreOverlay.addEventListener('click', (e) => {
+        if (!document.getElementById('moreDrawer').contains(e.target) || e.target === moreOverlay) {
+            moreOverlay.classList.remove('open');
+        }
+    });
+</script>
 </body>
 </html>
