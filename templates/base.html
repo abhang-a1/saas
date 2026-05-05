@@ -1,228 +1,1217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}DentaCare CRM{% endblock %}</title>
-    <link rel="preconnect" href="https://api.fontshare.com">
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    {% block head %}{% endblock %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}DentaCare CRM{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  {% block head %}{% endblock %}
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+    :root {
+      --bg: #F7F6F2;
+      --surface: #FFFFFF;
+      --primary: #1A6B5A;
+      --primary-hover: #155A4B;
+      --primary-light: #E8F4F1;
+      --text: #1A1A2E;
+      --text-muted: #6B7280;
+      --danger: #DC2626;
+      --danger-bg: #FEF2F2;
+      --danger-border: #FECACA;
+      --warning: #D97706;
+      --warning-bg: #FFFBEB;
+      --success: #16A34A;
+      --success-bg: #F0FDF4;
+      --info: #2563EB;
+      --info-bg: #EFF6FF;
+      --border: #E5E7EB;
+      --sidebar-bg: #1A1A2E;
+      --sidebar-w: 220px;
+      --topbar-h: 56px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-pill: 20px;
+      --shadow-card: 0 1px 4px rgba(0,0,0,0.07);
+    }
+
+    html, body { height: 100%; }
+    body {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font-family: inherit; }
+    input, select, textarea { font-family: inherit; }
+
+    /* ─── LAYOUT ─────────────────────────────────── */
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ─── SIDEBAR ─────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--sidebar-bg);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 300;
+      overflow-y: auto;
+      transition: transform 0.25s ease;
+    }
+    .sidebar-logo {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+    .sidebar-logo-mark {
+      width: 30px; height: 30px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+    .sidebar-logo-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
+    }
+    .sidebar-logo-sub {
+      font-size: 10px;
+      color: #64748B;
+      display: block;
+      font-weight: 400;
+    }
+
+    .sidebar-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #475569;
+      text-transform: uppercase;
+      padding: 16px 20px 6px;
+    }
+    .sidebar-nav { flex: 1; padding: 8px 0; }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      height: 40px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #94A3B8;
+      border-left: 3px solid transparent;
+      transition: background 0.15s ease, color 0.15s ease;
+      white-space: nowrap;
+    }
+    .sidebar-nav a:hover { background: rgba(255,255,255,0.05); color: #CBD5E1; }
+    .sidebar-nav a.active {
+      background: rgba(255,255,255,0.08);
+      color: #FFFFFF;
+      border-left-color: var(--primary);
+    }
+    .sidebar-nav a svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .sidebar-user {
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 16px;
+      flex-shrink: 0;
+    }
+    .sidebar-user-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .sidebar-user-name { font-size: 13px; font-weight: 600; color: #F1F5F9; }
+    .sidebar-user-role { font-size: 11px; color: #64748B; }
+    .sidebar-logout {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #64748B;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .sidebar-logout:hover { background: rgba(255,255,255,0.05); color: #94A3B8; }
+
+    /* ─── MAIN AREA ───────────────────────────────── */
+    .main-wrap {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* ─── TOPBAR ──────────────────────────────────── */
+    .topbar {
+      height: var(--topbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      flex-shrink: 0;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      padding: 6px;
+      border-radius: 6px;
+      color: var(--text-muted);
+    }
+    .topbar-title { font-size: 16px; font-weight: 600; color: var(--text); }
+    .topbar-date { font-size: 12px; color: var(--text-muted); }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    /* reminder bell */
+    .bell-btn {
+      position: relative;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: none;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted);
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .bell-btn:hover { background: var(--bg); border-color: var(--primary); color: var(--primary); }
+    .bell-dot {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 7px; height: 7px;
+      background: var(--danger);
+      border-radius: 50%;
+      border: 1.5px solid var(--surface);
+      display: none;
+    }
+    .bell-dot.show { display: block; }
+    .bell-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 300px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      z-index: 400;
+      overflow: hidden;
+      display: none;
+    }
+    .bell-dropdown.open { display: block; }
+    .bell-dropdown-header {
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .bell-reminder-item {
+      padding: 10px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid #F9FAFB;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .bell-reminder-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+    .bell-reminder-empty { padding: 16px; font-size: 13px; color: var(--text-muted); text-align: center; }
+
+    .topbar-badge-trial {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--warning-bg);
+      color: var(--warning);
+      border: 1px solid #FDE68A;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .topbar-badge-trial:hover { opacity: 0.8; }
+    .topbar-badge-pro {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .topbar-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ─── PAGE BODY ───────────────────────────────── */
+    .page-body { flex: 1; padding: 24px; overflow-x: hidden; }
+
+    /* upgrade banner */
+    .upgrade-banner {
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .upgrade-banner-text { font-size: 14px; color: var(--danger); font-weight: 500; }
+    .upgrade-banner a {
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--danger);
+      color: #fff;
+      padding: 7px 16px;
+      border-radius: var(--radius-sm);
+      transition: opacity 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .upgrade-banner a:hover { opacity: 0.88; }
+
+    /* page header */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .page-header-left { min-width: 0; }
+    .page-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .page-title { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .page-subtitle { font-size: 13.5px; color: var(--text-muted); margin-top: 4px; max-width: 560px; }
+    .page-header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+
+    /* ─── BUTTONS ─────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 36px;
+      padding: 0 16px;
+      font-size: 13.5px;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      border: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, opacity 0.15s;
+      white-space: nowrap;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .btn:disabled, .btn.disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,107,90,0.25); }
+
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); }
+    .btn-secondary:hover:not(:disabled) { border-color: #CBD5E1; background: var(--bg); }
+
+    .btn-danger { background: var(--danger-bg); color: var(--danger); border: 1.5px solid var(--danger-border); }
+    .btn-danger:hover:not(:disabled) { background: #FEE2E2; }
+
+    .btn-ghost { background: transparent; color: var(--text-muted); }
+    .btn-ghost:hover:not(:disabled) { background: var(--bg); color: var(--text); }
+
+    .btn-sm { height: 30px; padding: 0 12px; font-size: 12.5px; }
+    .btn-icon { width: 32px; height: 32px; padding: 0; border-radius: 50%; justify-content: center; }
+
+    /* ─── FORM CONTROLS ───────────────────────────── */
+    .form-group { margin-bottom: 16px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .form-control {
+      width: 100%;
+      height: 38px;
+      padding: 0 12px;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      appearance: none;
+    }
+    .form-control::placeholder { color: #9CA3AF; }
+    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,107,90,0.10); }
+    textarea.form-control { height: auto; padding: 10px 12px; resize: vertical; min-height: 100px; }
+    select.form-control {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+    .form-hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+    /* ─── CARDS ───────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .card-header-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .card-header-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+    .card-body { padding: 20px; }
+    .card-body-flush { padding: 0; }
+
+    /* ─── STAT CARDS ──────────────────────────────── */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.28s ease-out forwards;
+    }
+    .stat-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .stat-icon svg { width: 18px; height: 18px; }
+    .stat-value { font-size: 24px; font-weight: 700; color: var(--text); line-height: 1.1; }
+    .stat-label { font-size: 12px; font-weight: 500; color: var(--text-muted); margin-top: 2px; }
+    .stat-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ─── TABLE ───────────────────────────────────── */
+    .table-wrap { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead th {
+      background: #F9FAFB;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .data-table tbody td { padding: 12px 16px; border-bottom: 1px solid #F3F4F6; vertical-align: middle; }
+    .data-table tbody tr:hover td { background: var(--bg); }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table td.td-primary { font-weight: 500; color: var(--text); }
+    .data-table .td-actions { display: flex; gap: 6px; align-items: center; white-space: nowrap; }
+
+    /* ─── BADGES ──────────────────────────────────── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 9px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    /* Stage badges */
+    .badge-stage-new-inquiry        { background:#EFF6FF; color:#2563EB; }
+    .badge-stage-qualified-lead     { background:#F0FDF4; color:#16A34A; }
+    .badge-stage-appointment-booked { background:#DCFCE7; color:#15803D; }
+    .badge-stage-visited-clinic     { background:#E0F2FE; color:#0369A1; }
+    .badge-stage-treatment-proposed { background:#FEF9C3; color:#A16207; }
+    .badge-stage-treatment-ongoing  { background:#FFF7ED; color:#C2410C; }
+    .badge-stage-follow-up-due      { background:#FEF3C7; color:#B45309; }
+    .badge-stage-recall-scheduled   { background:#F3E8FF; color:#7C3AED; }
+    .badge-stage-won-patient        { background:#DCFCE7; color:#166534; font-weight:700; }
+    .badge-stage-lost-lead          { background:#F1F5F9; color:#64748B; }
+    .badge-stage-missed-appointment { background:#FEE2E2; color:#DC2626; }
+    /* Priority badges */
+    .badge-cold { background:#F1F5F9; color:#64748B; }
+    .badge-warm { background:#FEF9C3; color:#A16207; }
+    .badge-hot  { background:#FFF7ED; color:#C2410C; }
+    .badge-vip  { background:#FDF4FF; color:#9333EA; }
+    /* Appointment status */
+    .badge-scheduled   { background:#EFF6FF; color:#2563EB; }
+    .badge-completed   { background:#F0FDF4; color:#16A34A; }
+    .badge-missed      { background:#FEE2E2; color:#DC2626; }
+    .badge-cancelled   { background:#F1F5F9; color:#64748B; }
+    .badge-rescheduled { background:#F3E8FF; color:#7C3AED; }
+    /* Task priority */
+    .badge-urgent  { background:#FEE2E2; color:#DC2626; }
+    .badge-high    { background:#FFF7ED; color:#C2410C; }
+    .badge-normal  { background:#EFF6FF; color:#2563EB; }
+    .badge-low     { background:#F1F5F9; color:#64748B; }
+    /* Payment status */
+    .badge-paid            { background:#F0FDF4; color:#16A34A; }
+    .badge-overdue         { background:#FEE2E2; color:#DC2626; }
+    .badge-partially-paid  { background:#FEF9C3; color:#A16207; }
+    .badge-quoted          { background:#EFF6FF; color:#2563EB; }
+    .badge-not-quoted      { background:#F1F5F9; color:#64748B; }
+    /* Generic */
+    .badge-success { background: var(--success-bg); color: var(--success); }
+    .badge-danger  { background: var(--danger-bg);  color: var(--danger); }
+    .badge-warning { background: var(--warning-bg); color: var(--warning); }
+    .badge-info    { background: var(--info-bg);    color: var(--info); }
+    .badge-neutral { background:#F1F5F9; color:#64748B; }
+    .badge-active  { background: var(--primary-light); color: var(--primary); }
+
+    /* ─── AVATAR ──────────────────────────────────── */
+    .avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .avatar-sm { width: 28px; height: 28px; font-size: 10px; }
+    .avatar-lg { width: 44px; height: 44px; font-size: 15px; }
+
+    /* ─── PATIENT META ────────────────────────────── */
+    .patient-cell { display: flex; align-items: center; gap: 10px; }
+    .patient-cell-info { min-width: 0; }
+    .patient-name { font-size: 13.5px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .patient-sub  { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* tag chips */
+    .tag-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: var(--radius-pill);
+      font-size: 11px; font-weight: 500;
+    }
+
+    /* WhatsApp link */
+    .wa-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      color: #16A34A;
+      font-size: 13px;
+    }
+    .wa-link svg { width: 14px; height: 14px; }
+
+    /* Priority dot */
+    .priority-dot {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px;
+    }
+    .priority-dot::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .priority-dot.cold::before { background: #64748B; }
+    .priority-dot.warm::before { background: #F59E0B; }
+    .priority-dot.hot::before  { background: #F97316; }
+    .priority-dot.vip::before  { background: #9333EA; }
+
+    /* ─── LEAD SCORE RING ─────────────────────────── */
+    .score-ring-wrap { position: relative; width: 36px; height: 36px; flex-shrink: 0; }
+    .score-ring-wrap svg { width: 36px; height: 36px; transform: rotate(-90deg); }
+    .score-ring-bg { fill: none; stroke: #E5E7EB; stroke-width: 3; }
+    .score-ring-fg { fill: none; stroke-width: 3; stroke-linecap: round; transition: stroke-dasharray 0.4s ease; }
+    .score-ring-fg.red    { stroke: #DC2626; }
+    .score-ring-fg.amber  { stroke: #D97706; }
+    .score-ring-fg.teal   { stroke: #1A6B5A; }
+    .score-ring-label {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 9px; font-weight: 700; color: var(--text);
+      line-height: 1;
+    }
+
+    /* ─── FINANCIAL BAR ───────────────────────────── */
+    .fin-bar-wrap { display: flex; flex-direction: column; gap: 3px; min-width: 80px; }
+    .fin-bar-track { height: 5px; background: #E5E7EB; border-radius: 3px; overflow: hidden; }
+    .fin-bar-fill  { height: 100%; background: var(--primary); border-radius: 3px; }
+    .fin-bar-labels { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-muted); }
+
+    /* ─── EMPTY STATE ─────────────────────────────── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      text-align: center;
+    }
+    .empty-icon { font-size: 40px; margin-bottom: 14px; }
+    .empty-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .empty-sub { font-size: 13px; color: var(--text-muted); max-width: 320px; margin-bottom: 20px; }
+
+    /* ─── TOAST NOTIFICATIONS ─────────────────────── */
+    .toast-area {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      width: 320px;
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border-left: 4px solid;
+      pointer-events: all;
+      animation: toastIn 0.25s ease-out forwards;
+      position: relative;
+    }
+    .toast.success { border-color: var(--success); }
+    .toast.error   { border-color: var(--danger); }
+    .toast.warning { border-color: var(--warning); }
+    .toast.info    { border-color: var(--info); }
+    .toast-body { flex: 1; font-size: 13.5px; color: var(--text); line-height: 1.45; }
+    .toast-close {
+      background: none; border: none;
+      font-size: 16px; color: var(--text-muted);
+      cursor: pointer; padding: 0; line-height: 1;
+      flex-shrink: 0;
+    }
+    @keyframes toastIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
+    @keyframes fadeUp  { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+
+    /* stagger animation classes */
+    .anim-0 { animation-delay: 0.00s; }
+    .anim-1 { animation-delay: 0.05s; }
+    .anim-2 { animation-delay: 0.10s; }
+    .anim-3 { animation-delay: 0.15s; }
+    .anim-4 { animation-delay: 0.20s; }
+    .anim-5 { animation-delay: 0.25s; }
+    .anim-6 { animation-delay: 0.30s; }
+
+    /* ─── MODAL ───────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(2px);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      animation: modalIn 0.2s ease forwards;
+    }
+    @keyframes modalIn { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:scale(1); } }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .modal-title { font-size: 16px; font-weight: 600; color: var(--text); }
+    .modal-close { background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; padding: 2px; }
+
+    /* ─── SIDEBAR OVERLAY (mobile) ────────────────── */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 299;
+    }
+
+    /* ─── SECTION DIVIDER ─────────────────────────── */
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .section-title-sub { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+
+    /* ─── FILTER BAR ──────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .filter-bar .form-control { height: 36px; width: auto; min-width: 140px; }
+    .filter-bar input.form-control { min-width: 200px; }
+
+    /* ─── TAB NAV ─────────────────────────────────── */
+    .tab-nav {
+      display: flex;
+      gap: 4px;
+      background: #F1F5F9;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      flex-wrap: wrap;
+    }
+    .tab-nav a {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .tab-nav a:hover { background: rgba(255,255,255,0.7); color: var(--text); }
+    .tab-nav a.active { background: var(--surface); color: var(--primary); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+    /* ─── BOTTOM NAV (mobile) ─────────────────────── */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 64px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      z-index: 250;
+      align-items: center;
+      justify-content: space-around;
+    }
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      min-width: 44px; min-height: 44px;
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-radius: 8px;
+      transition: color 0.15s;
+      position: relative;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    .bottom-nav-item svg { width: 20px; height: 20px; }
+    .bottom-nav-item.active { color: var(--primary); }
+    .bottom-nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      width: 4px; height: 4px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    /* FAB */
+    .fab {
+      position: fixed;
+      bottom: 80px; right: 20px;
+      width: 52px; height: 52px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: none;
+      align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(26,107,90,0.35);
+      z-index: 240;
+      border: none;
+      cursor: pointer;
+      font-size: 22px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      text-decoration: none;
+    }
+    .fab:hover { transform: scale(1.06); box-shadow: 0 6px 20px rgba(26,107,90,0.40); }
+    .fab svg { width: 22px; height: 22px; }
+
+    /* Mobile slide-up more menu */
+    .more-drawer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-radius: 20px 20px 0 0;
+      z-index: 260;
+      padding: 16px;
+      transform: translateY(100%);
+      transition: transform 0.25s ease;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+    }
+    .more-drawer.open { transform: translateY(0); }
+    .more-drawer-handle {
+      width: 36px; height: 4px;
+      background: #E5E7EB;
+      border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+    .more-drawer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .more-drawer-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      transition: background 0.15s;
+    }
+    .more-drawer-item:hover { background: var(--bg); }
+    .more-drawer-item svg { width: 20px; height: 20px; color: var(--primary); }
+
+    /* ─── RESPONSIVE ──────────────────────────────── */
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 0px; }
+      .sidebar { transform: translateX(-220px); width: 220px; }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay { display: block; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+      .sidebar-overlay.show { opacity: 1; pointer-events: all; }
+      .main-wrap { margin-left: 0; }
+      .topbar-hamburger { display: flex; align-items: center; justify-content: center; }
+      .page-body { padding: 16px 16px 80px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .form-row, .form-row-3 { grid-template-columns: 1fr; }
+      .bottom-nav { display: flex; }
+      .fab { display: flex; }
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .page-header-actions { width: 100%; }
+
+      /* mobile table → card list */
+      .mobile-card-list { display: flex; flex-direction: column; gap: 10px; }
+      .mobile-row-card {
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-card);
+        padding: 14px 16px;
+      }
+    }
+    @media (min-width: 769px) {
+      .mobile-only { display: none !important; }
+    }
+    @media (max-width: 768px) {
+      .desktop-only { display: none !important; }
+    }
+    @media (max-width: 1100px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
 </head>
 <body>
-    <a href="#main-content" class="skip-link">Skip to content</a>
 
-    <div class="app-shell">
-        {% if user %}
-        <aside class="sidebar" id="sidebar" aria-label="Primary">
-            <div class="sidebar-top">
-                <a href="{{ url_for('dashboard') }}" class="brand" aria-label="DentaCare CRM home">
-                    <span class="brand-mark" aria-hidden="true">
-                        <svg viewBox="0 0 32 32" fill="none">
-                            <path d="M16 4C11.1 4 7 7.7 7 12.5c0 4 2.6 7.3 5.8 8.7V26c0 1.1.9 2 2 2h2.4c1.1 0 2-.9 2-2v-4.8c3.2-1.4 5.8-4.7 5.8-8.7C25 7.7 20.9 4 16 4Z" stroke="currentColor" stroke-width="1.8"/>
-                            <path d="M12.3 13.2c.9-1.9 2.3-2.8 4.1-2.8 1.8 0 3.1.9 3.9 2.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                            <path d="M13 17.6h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                        </svg>
-                    </span>
-                    <span class="brand-copy">
-                        <strong>DentaCare</strong>
-                        <small>Practice command</small>
-                    </span>
-                </a>
+{% if user %}
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-                <button type="button" class="sidebar-close" aria-label="Close navigation" onclick="closeSidebar()">
-                    <span></span>
-                    <span></span>
-                </button>
-            </div>
-
-            <div class="sidebar-section">
-                <p class="sidebar-label">Overview</p>
-                <nav class="sidebar-nav">
-                    <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
-                        <span class="nav-icon">◫</span>
-                        <span class="nav-text">Dashboard</span>
-                    </a>
-                    <a href="{{ url_for('crm_command_center') }}" class="nav-link {% if request.endpoint == 'crm_command_center' %}active{% endif %}">
-                        <span class="nav-icon">◎</span>
-                        <span class="nav-text">CRM cockpit</span>
-                    </a>
-                    <a href="{{ url_for('patients') }}" class="nav-link {% if request.endpoint == 'patients' %}active{% endif %}">
-                        <span class="nav-icon">◌</span>
-                        <span class="nav-text">Patients</span>
-                    </a>
-                    <a href="{{ url_for('appointments') }}" class="nav-link {% if request.endpoint == 'appointments' %}active{% endif %}">
-                        <span class="nav-icon">◷</span>
-                        <span class="nav-text">Appointments</span>
-                    </a>
-                </nav>
-            </div>
-
-            <div class="sidebar-section">
-                <p class="sidebar-label">Retention</p>
-                <nav class="sidebar-nav">
-                    <a href="{{ url_for('followups') }}" class="nav-link {% if request.endpoint == 'followups' %}active{% endif %}">
-                        <span class="nav-icon">↺</span>
-                        <span class="nav-text">Follow-ups</span>
-                    </a>
-                    <a href="{{ url_for('tasks') }}" class="nav-link {% if request.endpoint == 'tasks' %}active{% endif %}">
-                        <span class="nav-icon">✓</span>
-                        <span class="nav-text">Tasks</span>
-                    </a>
-                    <a href="{{ url_for('broadcast') }}" class="nav-link {% if request.endpoint == 'broadcast' %}active{% endif %}">
-                        <span class="nav-icon">✦</span>
-                        <span class="nav-text">Broadcast</span>
-                    </a>
-                    <a href="{{ url_for('offers') }}" class="nav-link {% if request.endpoint == 'offers' %}active{% endif %}">
-                        <span class="nav-icon">◇</span>
-                        <span class="nav-text">Offers</span>
-                    </a>
-                    <a href="{{ url_for('aftercare') }}" class="nav-link {% if request.endpoint == 'aftercare' %}active{% endif %}">
-                        <span class="nav-icon">＋</span>
-                        <span class="nav-text">Aftercare</span>
-                    </a>
-                </nav>
-            </div>
-
-            <div class="sidebar-footer">
-                <div class="workspace-card">
-                    <div class="workspace-avatar">
-                        {{ user.name[0] if user and user.name else "U" }}
-                    </div>
-                    <div class="workspace-meta">
-                        <strong>{{ user.name if user else "User" }}</strong>
-                        <span>{{ user.role|capitalize if user and user.role else "Staff" }}</span>
-                    </div>
-                </div>
-
-                {% if subscription and subscription.status == "trial" %}
-                <a href="{{ url_for('upgrade') }}" class="upgrade-link">
-                    <span>Upgrade plan</span>
-                    <span>{{ subscription.days_left }}d left</span>
-                </a>
-                {% endif %}
-
-                <a href="{{ url_for('logout') }}" class="logout-link">
-                    <span>Sign out</span>
-                </a>
-            </div>
-        </aside>
-
-        <button class="sidebar-overlay" id="sidebarOverlay" type="button" aria-label="Close navigation" onclick="closeSidebar()"></button>
-        {% endif %}
-
-        <div class="app-main">
-            {% if user %}
-            <header class="topbar">
-                <div class="topbar-left">
-                    <button type="button" class="menu-toggle" aria-label="Open navigation" onclick="openSidebar()">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-
-                    <div class="page-intro">
-                        <div class="eyebrow">{% block page_eyebrow %}Dental practice operations{% endblock %}</div>
-                        <h1>{% block page_title %}Dashboard{% endblock %}</h1>
-                        <p class="page-subtitle">{% block page_subtitle %}Manage patient care, appointments, and outreach from one system.{% endblock %}</p>
-                    </div>
-                </div>
-
-                <div class="topbar-right">
-                    <div class="topbar-date" id="topbarDate"></div>
-
-                    {% if subscription and subscription.status == "trial" %}
-                    <a href="{{ url_for('upgrade') }}" class="trial-pill">
-                        <span class="trial-pill-dot"></span>
-                        <span>Trial: {{ subscription.days_left }}d left</span>
-                        <span class="trial-pill-cta">Upgrade</span>
-                    </a>
-                    {% endif %}
-
-                    <div class="quick-actions">
-                        {% block header_actions %}
-                        <a href="{{ url_for('add_patient') }}" class="btn btn-primary">New patient</a>
-                        {% endblock %}
-                    </div>
-                </div>
-            </header>
-            {% endif %}
-
-            <main id="main-content" class="page-main">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                    <div class="flash-stack">
-                        {% for category, message in messages %}
-                        <div class="flash flash-{{ category if category in ['success', 'warning', 'error', 'info'] else 'info' }}">
-                            <span class="flash-dot"></span>
-                            <p>{{ message }}</p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                {% endwith %}
-
-                {% block content %}{% endblock %}
-            </main>
-        </div>
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-mark">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.5 2 6 5 6 8c0 2 .5 3.5 1.5 5L9 17c.5 2 1 3 2 3h2c1 0 1.5-1 2-3l1.5-4C17.5 11.5 18 10 18 8c0-3-2.5-6-6-6z"/></svg>
     </div>
+    <div>
+      <span class="sidebar-logo-text">DentaCare</span>
+      <span class="sidebar-logo-sub">Practice CRM</span>
+    </div>
+  </div>
 
-    {% if user %}
-    <nav class="mobile-tabbar" aria-label="Mobile navigation">
-        <a href="{{ url_for('dashboard') }}" class="mobile-tab {% if request.endpoint == 'dashboard' %}active{% endif %}">
-            <span>Home</span>
-        </a>
-        <a href="{{ url_for('patients') }}" class="mobile-tab {% if request.endpoint == 'patients' %}active{% endif %}">
-            <span>Patients</span>
-        </a>
-        <a href="{{ url_for('appointments') }}" class="mobile-tab {% if request.endpoint == 'appointments' %}active{% endif %}">
-            <span>Appointments</span>
-        </a>
-        <a href="{{ url_for('tasks') }}" class="mobile-tab {% if request.endpoint == 'tasks' %}active{% endif %}">
-            <span>Tasks</span>
-        </a>
-        <a href="{{ url_for('broadcast') }}" class="mobile-tab {% if request.endpoint == 'broadcast' %}active{% endif %}">
-            <span>Broadcast</span>
-        </a>
-    </nav>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+    <a href="{{ url_for('dashboard') }}" class="{{ 'active' if active == 'dashboard' else '' }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="{{ url_for('crm_command_center') }}" class="{{ 'active' if active == 'crm' else '' }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      CRM Cockpit
+    </a>
+    <a href="{{ url_for('patients') }}" class="{{ 'active' if active == 'patients' else '' }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Patients
+    </a>
+    <a href="{{ url_for('appointments') }}" class="{{ 'active' if active == 'appointments' else '' }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Appointments
+    </a>
+
+    <div class="sidebar-section-label">Workflow</div>
+    <a href="{{ url_for('tasks') }}" class="{{ 'active' if active == 'tasks' else '' }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Tasks
+    </a>
+    <a href="{{ url_for('followups') }}" class="{{ 'active' if active == 'followups' else '' }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+      Follow-ups
+    </a>
+    <a href="{{ url_for('broadcast') }}" class="{{ 'active' if active == 'broadcast' else '' }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.57 3.41 2 2 0 0 1 3.55 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Broadcast
+    </a>
+    <a href="{{ url_for('offers') }}" class="{{ 'active' if active == 'offers' else '' }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      Offers
+    </a>
+    <a href="{{ url_for('aftercare') }}" class="{{ 'active' if active == 'aftercare' else '' }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Aftercare
+    </a>
+
+    {% if user and user.role == 'admin' %}
+    <div class="sidebar-section-label">Admin</div>
+    <a href="{{ url_for('audit') }}" class="{{ 'active' if active == 'audit' else '' }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Audit Trail
+    </a>
+    <a href="{{ url_for('plans') }}" class="{{ 'active' if active == 'plans' else '' }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      Plans
+    </a>
+    <a href="{{ url_for('settings') }}" class="{{ 'active' if active == 'settings' else '' }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </a>
+    {% endif %}
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="sidebar-user-row">
+      <div class="avatar" id="sidebarAvatar" style="background: var(--primary); color:#fff;">{{ user.name[0] if user and user.name else 'U' }}</div>
+      <div>
+        <div class="sidebar-user-name">{{ user.name if user else 'User' }}</div>
+        <div class="sidebar-user-role">{{ user.role|capitalize if user and user.role else 'Staff' }}</div>
+      </div>
+    </div>
+    <a class="sidebar-logout" href="{{ url_for('logout') }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign out
+    </a>
+  </div>
+</aside>
+{% endif %}
+
+<div class="{% if user %}main-wrap{% endif %}">
+  {% if user %}
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="topbar-hamburger" onclick="openSidebar()" aria-label="Open menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div>
+        <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+        <div class="topbar-date" id="topbarDate"></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <!-- Reminder bell -->
+      <div style="position:relative;">
+        <button class="bell-btn" id="bellBtn" aria-label="Reminders">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="bell-dot" id="bellDot"></span>
+        </button>
+        <div class="bell-dropdown" id="bellDropdown">
+          <div class="bell-dropdown-header">Reminders</div>
+          <div id="bellList"><div class="bell-reminder-empty">Loading...</div></div>
+        </div>
+      </div>
+
+      {% if subscription %}
+        {% if subscription.status == 'trial' %}
+          <a class="topbar-badge-trial" href="{{ url_for('upgrade') }}">{{ subscription.days_left }}d left &rarr; Upgrade</a>
+        {% elif subscription.status == 'paid' %}
+          <span class="topbar-badge-pro">Pro</span>
+        {% endif %}
+      {% endif %}
+
+      <div class="avatar" style="background: var(--primary); color:#fff; cursor:default;">{{ user.name[0] if user and user.name else 'U' }}</div>
+    </div>
+  </header>
+  {% endif %}
+
+  <main class="page-body" id="main-content">
+    {% if subscription and subscription.status == 'expired' %}
+    <div class="upgrade-banner">
+      <span class="upgrade-banner-text">Your trial has expired. Upgrade to continue using DentaCare.</span>
+      <a href="{{ url_for('upgrade') }}">Upgrade now</a>
+    </div>
     {% endif %}
 
-    <script>
-        const sidebar = document.getElementById("sidebar");
-        const sidebarOverlay = document.getElementById("sidebarOverlay");
-        const topbarDate = document.getElementById("topbarDate");
+    {% if user %}
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="page-eyebrow">{% block page_eyebrow %}Dental practice operations{% endblock %}</div>
+        <h1 class="page-title">{% block page_real_title %}Dashboard{% endblock %}</h1>
+        <p class="page-subtitle">{% block page_subtitle %}{% endblock %}</p>
+      </div>
+      <div class="page-header-actions">{% block header_actions %}{% endblock %}</div>
+    </div>
+    {% endif %}
 
-        function openSidebar() {
-            if (!sidebar || !sidebarOverlay) return;
-            sidebar.classList.add("open");
-            sidebarOverlay.classList.add("show");
-            document.body.classList.add("nav-open");
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="toast-area" id="toastArea" style="display:flex;">
+          {% for category, message in messages %}
+          <div class="toast {{ category }}" role="alert">
+            <div class="toast-body">{{ message }}</div>
+            <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+          </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if user %}
+  <!-- BOTTOM NAV (mobile) -->
+  <nav class="bottom-nav">
+    <a class="bottom-nav-item {{ 'active' if active == 'dashboard' else '' }}" href="{{ url_for('dashboard') }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Home
+    </a>
+    <a class="bottom-nav-item {{ 'active' if active == 'patients' else '' }}" href="{{ url_for('patients') }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Patients
+    </a>
+    <a class="bottom-nav-item {{ 'active' if active == 'appointments' else '' }}" href="{{ url_for('appointments') }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Schedule
+    </a>
+    <a class="bottom-nav-item {{ 'active' if active == 'tasks' else '' }}" href="{{ url_for('tasks') }}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Tasks
+    </a>
+    <button class="bottom-nav-item" onclick="openMoreDrawer()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      More
+    </button>
+  </nav>
+
+  <!-- More drawer (mobile) -->
+  <div class="more-drawer" id="moreDrawer">
+    <div class="more-drawer-handle"></div>
+    <div class="more-drawer-grid">
+      <a class="more-drawer-item" href="{{ url_for('crm_command_center') }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        CRM
+      </a>
+      <a class="more-drawer-item" href="{{ url_for('followups') }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+        Follow-ups
+      </a>
+      <a class="more-drawer-item" href="{{ url_for('broadcast') }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.57 3.41 2 2 0 0 1 3.55 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Broadcast
+      </a>
+      <a class="more-drawer-item" href="{{ url_for('offers') }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Offers
+      </a>
+      <a class="more-drawer-item" href="{{ url_for('aftercare') }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Aftercare
+      </a>
+      {% if user and user.role == 'admin' %}
+      <a class="more-drawer-item" href="{{ url_for('audit') }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Audit
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="more-drawer-overlay" id="moreDrawerOverlay" onclick="closeMoreDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:259;"></div>
+  {% endif %}
+</div>
+
+<!-- Toast auto-dismiss -->
+<script>
+  (function() {
+    const toasts = document.querySelectorAll('.toast');
+    toasts.forEach(function(t) {
+      setTimeout(function() {
+        t.style.transition = 'opacity 0.3s ease';
+        t.style.opacity = '0';
+        setTimeout(function() { t.remove(); }, 300);
+      }, 3500);
+    });
+  })();
+
+  const sidebar = document.getElementById('sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const topbarDate = document.getElementById('topbarDate');
+
+  function openSidebar() {
+    if (!sidebar || !sidebarOverlay) return;
+    sidebar.classList.add('open');
+    sidebarOverlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    if (!sidebar || !sidebarOverlay) return;
+    sidebar.classList.remove('open');
+    sidebarOverlay.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeSidebar(); closeMoreDrawer(); }
+  });
+  if (topbarDate) {
+    topbarDate.textContent = new Intl.DateTimeFormat('en-IN', {
+      weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+    }).format(new Date());
+  }
+
+  function openMoreDrawer() {
+    const d = document.getElementById('moreDrawer');
+    const o = document.getElementById('moreDrawerOverlay');
+    if (d) d.classList.add('open');
+    if (o) o.style.display = 'block';
+  }
+  function closeMoreDrawer() {
+    const d = document.getElementById('moreDrawer');
+    const o = document.getElementById('moreDrawerOverlay');
+    if (d) d.classList.remove('open');
+    if (o) o.style.display = 'none';
+  }
+
+  // Bell reminder logic
+  const bellBtn = document.getElementById('bellBtn');
+  const bellDropdown = document.getElementById('bellDropdown');
+  const bellDot = document.getElementById('bellDot');
+  const bellList = document.getElementById('bellList');
+
+  if (bellBtn) {
+    bellBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      bellDropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', function() {
+      if (bellDropdown) bellDropdown.classList.remove('open');
+    });
+    bellDropdown && bellDropdown.addEventListener('click', function(e) { e.stopPropagation(); });
+
+    fetch('/api/reminders')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!bellList) return;
+        if (data && data.length > 0) {
+          if (bellDot) bellDot.classList.add('show');
+          bellList.innerHTML = data.map(function(r) {
+            return '<div class="bell-reminder-item"><span class="bell-reminder-dot" style="background:' + (r.color || '#6B7280') + '"></span><span>' + r.msg + '</span></div>';
+          }).join('');
+        } else {
+          bellList.innerHTML = '<div class="bell-reminder-empty">No pending reminders</div>';
         }
+      })
+      .catch(function() {
+        if (bellList) bellList.innerHTML = '<div class="bell-reminder-empty">Could not load reminders</div>';
+      });
+  }
 
-        function closeSidebar() {
-            if (!sidebar || !sidebarOverlay) return;
-            sidebar.classList.remove("open");
-            sidebarOverlay.classList.remove("show");
-            document.body.classList.remove("nav-open");
-        }
+  // Avatar color utility (used globally)
+  function avatarColor(name) {
+    var palette = ['#1A6B5A','#2563EB','#7C3AED','#D97706','#DC2626','#0369A1','#C2410C','#15803D'];
+    if (!name) return palette[0];
+    return palette[name.charCodeAt(0) % palette.length];
+  }
+  document.querySelectorAll('[data-avatar-name]').forEach(function(el) {
+    el.style.background = avatarColor(el.dataset.avatarName);
+  });
 
-        document.addEventListener("keydown", function (event) {
-            if (event.key === "Escape") {
-                closeSidebar();
-            }
-        });
-
-        if (topbarDate) {
-            const formatter = new Intl.DateTimeFormat("en-IN", {
-                weekday: "short",
-                day: "numeric",
-                month: "short",
-                year: "numeric"
-            });
-            topbarDate.textContent = formatter.format(new Date());
-        }
-    </script>
-
-    {% block scripts %}{% endblock %}
+  // Score ring renderer
+  function renderScoreRing(wrap) {
+    var score = parseInt(wrap.dataset.score || 0, 10);
+    var r = 14;
+    var circ = 2 * Math.PI * r;
+    var dash = (score / 100) * circ;
+    var cls = score < 40 ? 'red' : score < 70 ? 'amber' : 'teal';
+    wrap.innerHTML =
+      '<svg viewBox="0 0 36 36">' +
+      '<circle class="score-ring-bg" cx="18" cy="18" r="' + r + '"/>' +
+      '<circle class="score-ring-fg ' + cls + '" cx="18" cy="18" r="' + r + '" stroke-dasharray="' + dash.toFixed(2) + ' ' + circ.toFixed(2) + '"/>' +
+      '</svg><span class="score-ring-label">' + score + '</span>';
+  }
+  document.querySelectorAll('.score-ring-wrap').forEach(renderScoreRing);
+</script>
+{% block scripts %}{% endblock %}
 </body>
 </html>
